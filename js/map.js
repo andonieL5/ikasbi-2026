@@ -104,8 +104,8 @@ d3.json("./assets/map/europe.geojson")
             .geoMercator()
             .fitExtent(
                 [
-                    [80, 100],
-                    [width - 80, height - 100]
+                    [60, 80],
+                    [width - 60, height - 80]
                 ],
                 cityCollection
             );
