@@ -78,21 +78,21 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // CREAR UNA ZONA DE ENCUADRE
+        // CREAR PUNTOS GEOGRÁFICOS DE LAS CIUDADES
         // ==========================================
 
-        const cropArea = {
+        const cityFeatures = cities.map(city => ({
             type: "Feature",
             geometry: {
-                type: "Polygon",
-                coordinates: [[
-                    [-7, 40],
-                    [19, 40],
-                    [19, 56],
-                    [-7, 56],
-                    [-7, 40]
-                ]]
+                type: "Point",
+                coordinates: city.coordinates
             }
+        }));
+
+
+        const cityCollection = {
+            type: "FeatureCollection",
+            features: cityFeatures
         };
 
 
@@ -104,10 +104,10 @@ d3.json("./assets/map/europe.geojson")
             .geoMercator()
             .fitExtent(
                 [
-                    [20, 70],
-                    [width - 20, height - 40]
+                    [80, 100],
+                    [width - 80, height - 100]
                 ],
-                cropArea
+                cityCollection
             );
 
 
@@ -135,10 +135,10 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // CALCULAR POSICIONES DE CIUDADES
+        // POSICIONES DE LAS CIUDADES
         // ==========================================
 
-        cities.forEach((city) => {
+        cities.forEach(city => {
 
             const [x, y] = projection(city.coordinates);
 
@@ -167,7 +167,7 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // PUNTOS DE LAS CIUDADES
+        // PUNTOS
         // ==========================================
 
         svg
@@ -181,10 +181,10 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // COLOCAR BOTONES
+        // POSICIONAR BOTONES
         // ==========================================
 
-        cities.forEach((city) => {
+        cities.forEach(city => {
 
             const button = document.getElementById(city.button);
 
@@ -198,11 +198,10 @@ d3.json("./assets/map/europe.geojson")
         });
 
 
-        console.log("Mapa recortado correctamente.");
-        console.log("Ruta:", cities);
+        console.log("Ruta y ciudades colocadas correctamente.");
 
     })
-    .catch((error) => {
+    .catch(error => {
 
         console.error(
             "Error cargando el mapa:",
