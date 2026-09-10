@@ -2,94 +2,164 @@
 <html lang="es">
 
 <head>
+
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <meta
+        name="viewport"
+        content="width=device-width, initial-scale=1.0"
+    >
 
     <title>IKASBI 2026</title>
 
+    <!-- CSS principal -->
     <link rel="stylesheet" href="css/style.css">
+
 </head>
+
 
 <body>
 
-    <!-- =========================================
-         PANTALLA PRINCIPAL
-    ========================================== -->
+    <!-- ==================================================
+         APLICACIÓN PRINCIPAL
+    =================================================== -->
 
     <main id="app">
 
-        <!-- TÍTULO -->
+
+        <!-- ==================================================
+             CABECERA / TÍTULO
+        =================================================== -->
+
         <header class="main-header">
+
             <h1>IKASBI 2026</h1>
-            <p>El viaje que nunca olvidaremos</p>
+
+            <p>
+                El viaje que nunca olvidaremos
+            </p>
+
         </header>
 
 
-        <!-- =====================================
-             MAPA
-        ====================================== -->
+
+        <!-- ==================================================
+             MAPA DE EUROPA
+        =================================================== -->
 
         <section id="map-container">
 
-            <!-- Aquí colocaremos posteriormente
-                 el mapa vectorial de Europa -->
-
             <div id="map">
-                
-                <!-- Recorrido -->
+
+                <!--
+                    El mapa vectorial de Europa
+                    se cargará posteriormente aquí.
+                -->
+
+
+                <!-- ==================================================
+                     RECORRIDO DEL VIAJE
+                =================================================== -->
+
                 <div id="route"></div>
 
 
-                <!-- CIUDADES -->
 
-                <button class="city-button" id="city-tolosa">
+                <!-- ==================================================
+                     CIUDADES
+                =================================================== -->
+
+                <button
+                    class="city-button"
+                    id="city-tolosa"
+                    data-city="Tolosa"
+                >
                     Tolosa
                 </button>
 
-                <button class="city-button" id="city-clermont">
+
+                <button
+                    class="city-button"
+                    id="city-clermont"
+                    data-city="Clermont-Ferrand"
+                >
                     Clermont-Ferrand
                 </button>
 
-                <button class="city-button" id="city-munich">
+
+                <button
+                    class="city-button"
+                    id="city-munich"
+                    data-city="Múnich"
+                >
                     Múnich
                 </button>
 
-                <button class="city-button" id="city-prague">
+
+                <button
+                    class="city-button"
+                    id="city-prague"
+                    data-city="Praga"
+                >
                     Praga
                 </button>
 
-                <button class="city-button" id="city-berlin">
+
+                <button
+                    class="city-button"
+                    id="city-berlin"
+                    data-city="Berlín"
+                >
                     Berlín
                 </button>
 
-                <button class="city-button" id="city-amsterdam">
+
+                <button
+                    class="city-button"
+                    id="city-amsterdam"
+                    data-city="Ámsterdam"
+                >
                     Ámsterdam
                 </button>
 
-                <button class="city-button" id="city-bruges">
+
+                <button
+                    class="city-button"
+                    id="city-bruges"
+                    data-city="Brujas"
+                >
                     Brujas
                 </button>
 
-                <button class="city-button" id="city-paris">
+
+                <button
+                    class="city-button"
+                    id="city-paris"
+                    data-city="París"
+                >
                     París
                 </button>
+
 
             </div>
 
         </section>
 
 
-        <!-- =====================================
-             PANEL LATERAL DE FOTOS
-        ====================================== -->
+
+        <!-- ==================================================
+             PANEL LATERAL DE FOTOGRAFÍAS
+        =================================================== -->
 
         <aside id="photo-panel">
 
-            <!-- Cabecera del panel -->
+
+            <!-- CABECERA DEL PANEL -->
 
             <div class="panel-header">
 
                 <div>
+
                     <span class="panel-subtitle">
                         FOTOS DEL VIAJE
                     </span>
@@ -97,62 +167,120 @@
                     <h2 id="panel-city">
                         París
                     </h2>
+
                 </div>
 
-                <button id="close-panel" aria-label="Cerrar">
+
+                <!-- CERRAR PANEL -->
+
+                <button
+                    id="close-panel"
+                    aria-label="Cerrar panel"
+                >
                     ×
                 </button>
 
             </div>
 
 
-            <!-- Galería -->
+
+            <!-- ==================================================
+                 GALERÍA
+            =================================================== -->
 
             <div id="gallery">
 
                 <!--
-                    Las fotos se cargarán aquí
-                    mediante JavaScript.
+                    Las fotografías se añadirán
+                    automáticamente mediante JavaScript.
                 -->
 
             </div>
 
 
-            <!-- Botón para añadir fotos -->
 
-            <button id="add-photo-button" aria-label="Añadir fotografías">
+            <!-- ==================================================
+                 AÑADIR FOTOGRAFÍAS
+            =================================================== -->
+
+            <button
+                id="add-photo-button"
+                aria-label="Añadir fotografías"
+            >
                 +
             </button>
+
 
         </aside>
 
 
-        <!-- =====================================
-             VISOR DE FOTO
-        ====================================== -->
+
+        <!-- ==================================================
+             VISOR DE FOTOGRAFÍAS
+        =================================================== -->
 
         <div id="photo-viewer">
 
-            <button id="close-viewer" aria-label="Cerrar foto">
+
+            <!-- CERRAR FOTO -->
+
+            <button
+                id="close-viewer"
+                aria-label="Cerrar fotografía"
+            >
                 ×
             </button>
 
-            <button id="download-photo" aria-label="Descargar foto">
+
+
+            <!-- DESCARGAR FOTO -->
+
+            <button
+                id="download-photo"
+                aria-label="Descargar fotografía"
+            >
                 ↓
             </button>
 
-            <img id="viewer-image" src="" alt="Fotografía del viaje">
+
+
+            <!-- FOTO AMPLIADA -->
+
+            <img
+                id="viewer-image"
+                src=""
+                alt="Fotografía del viaje"
+            >
+
 
         </div>
+
 
     </main>
 
 
-    <!-- JavaScript -->
+
+    <!-- ==================================================
+         D3.JS
+         Biblioteca que utilizaremos para el mapa
+    =================================================== -->
+
+    <script
+        src="https://d3js.org/d3.v7.min.js">
+    </script>
+
+
+
+    <!-- ==================================================
+         JAVASCRIPT DEL PROYECTO
+    =================================================== -->
 
     <script src="js/app.js"></script>
+
     <script src="js/map.js"></script>
+
     <script src="js/gallery.js"></script>
+
 
 </body>
 
