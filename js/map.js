@@ -1,15 +1,8 @@
+// ==========================================
+// CONTENEDOR DEL MAPA
+// ==========================================
+
 const mapContainer = document.getElementById("map");
-
-const width = mapContainer.clientWidth;
-const height = mapContainer.clientHeight;
-
-const svg = d3
-    .select("#map")
-    .append("svg")
-    .attr("width", width)
-    .attr("height", height)
-    .attr("viewBox", `0 0 ${width} ${height}`)
-    .attr("preserveAspectRatio", "xMidYMid meet");
 
 
 // ==========================================
@@ -61,62 +54,78 @@ const cities = [
 
 
 // ==========================================
-// CARGAR MAPA
+// CREAR SVG
 // ==========================================
 
-d3.json("assets/map/europe.geojson")
+const width = mapContainer.clientWidth;
+const height = mapContainer.clientHeight;
+
+const svg = d3
+    .select("#map")
+    .append("svg")
+    .attr("viewBox", `0 0 ${width} ${height}`);
+
+
+// ==========================================
+// CARGAR EUROPA
+// ==========================================
+
+d3.json("./assets/map/europe.geojson")
     .then((europe) => {
 
-        console.log("Mapa de Europa cargado correctamente.");
+        console.log("Europa cargada correctamente");
 
-        // ==========================================
+        // ======================================
         // PROYECCIÓN
-        // ==========================================
+        // ======================================
 
         const projection = d3
             .geoNaturalEarth1()
             .fitExtent(
                 [
-                    [40, 80],
-                    [width - 40, height - 40]
+                    [100, 80],
+                    [width - 100, height - 80]
                 ],
                 europe
             );
+
 
         const path = d3
             .geoPath()
             .projection(projection);
 
 
-        // ==========================================
+        // ======================================
         // DIBUJAR PAÍSES
-        // ==========================================
+        // ======================================
 
         svg
-            .selectAll(".country")
+            .append("g")
+            .attr("class", "countries")
+            .selectAll("path")
             .data(europe.features)
             .join("path")
             .attr("class", "country")
             .attr("d", path);
 
 
-        // ==========================================
-        // CALCULAR POSICIÓN DE LAS CIUDADES
-        // ==========================================
+        // ======================================
+        // CALCULAR POSICIONES
+        // ======================================
 
-        cities.forEach(city => {
+        cities.forEach((city) => {
 
-            const [x, y] = projection(city.coordinates);
+            const position = projection(city.coordinates);
 
-            city.x = x;
-            city.y = y;
+            city.x = position[0];
+            city.y = position[1];
 
         });
 
 
-        // ==========================================
+        // ======================================
         // DIBUJAR RECORRIDO
-        // ==========================================
+        // ======================================
 
         const routeLine = d3
             .line()
@@ -132,9 +141,9 @@ d3.json("assets/map/europe.geojson")
             .attr("d", routeLine);
 
 
-        // ==========================================
-        // DIBUJAR PUNTOS DE LAS CIUDADES
-        // ==========================================
+        // ======================================
+        // DIBUJAR PUNTOS
+        // ======================================
 
         svg
             .selectAll(".city-point")
@@ -143,18 +152,23 @@ d3.json("assets/map/europe.geojson")
             .attr("class", "city-point")
             .attr("cx", city => city.x)
             .attr("cy", city => city.y)
-            .attr("r", 7);
+            .attr("r", 6);
 
 
-        // ==========================================
-        // COLOCAR BOTONES SOBRE EL MAPA
-        // ==========================================
+        // ======================================
+        // POSICIONAR BOTONES HTML
+        // ======================================
 
-        cities.forEach(city => {
+        cities.forEach((city) => {
 
             const button = document.getElementById(city.button);
 
             if (!button) {
+                console.error(
+                    "No se encontró el botón:",
+                    city.button
+                );
+
                 return;
             }
 
@@ -164,15 +178,11 @@ d3.json("assets/map/europe.geojson")
         });
 
 
-        console.log("Recorrido dibujado correctamente.");
-        console.log("Ciudades posicionadas:", cities);
+        console.log("Mapa, recorrido y ciudades preparados");
 
     })
     .catch((error) => {
 
-        console.error(
-            "Error cargando el mapa:",
-            error
-        );
+        console.error("ERROR AL CARGAR EL MAPA:", error);
 
     });
