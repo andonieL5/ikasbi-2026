@@ -8,30 +8,18 @@ const panelCity = document.getElementById("panel-city");
 
 
 // ==========================================
-// CIUDADES
-// ==========================================
-
-const cityButtons = document.querySelectorAll(".city-button");
-
-
-// ==========================================
 // ABRIR PANEL DE UNA CIUDAD
 // ==========================================
 
 function openCity(cityName) {
 
-    // Cambiar el nombre de la ciudad
+    // Cambiar el título
     panelCity.textContent = cityName;
-
 
     // Abrir el panel
     photoPanel.classList.add("panel-open");
 
-
-    console.log(
-        "Panel abierto:",
-        cityName
-    );
+    console.log("Ciudad abierta:", cityName);
 }
 
 
@@ -41,43 +29,40 @@ function openCity(cityName) {
 
 function closeCityPanel() {
 
-    photoPanel.classList.remove(
-        "panel-open"
-    );
+    photoPanel.classList.remove("panel-open");
 
-
-    console.log(
-        "Panel cerrado."
-    );
+    console.log("Panel cerrado");
 }
 
 
 // ==========================================
-// BOTONES DE LAS CIUDADES
+// PREPARAR BOTONES
 // ==========================================
 
-cityButtons.forEach(button => {
+function setupCityButtons() {
 
-    button.addEventListener(
-        "click",
-        () => {
+    const cityButtons =
+        document.querySelectorAll(".city-button");
 
-            // Obtener el nombre de la ciudad
+
+    cityButtons.forEach(button => {
+
+        button.addEventListener("click", () => {
+
             const cityName =
                 button.textContent.trim();
 
-
-            // Abrir/cambiar el panel
             openCity(cityName);
 
-        }
-    );
+        });
 
-});
+    });
+
+}
 
 
 // ==========================================
-// BOTÓN CERRAR
+// BOTÓN DE CERRAR
 // ==========================================
 
 closePanel.addEventListener(
@@ -87,7 +72,7 @@ closePanel.addEventListener(
 
 
 // ==========================================
-// CERRAR CON ESC
+// TECLA ESC
 // ==========================================
 
 document.addEventListener(
@@ -102,3 +87,10 @@ document.addEventListener(
 
     }
 );
+
+
+// ==========================================
+// INICIAR
+// ==========================================
+
+setupCityButtons();
