@@ -12,7 +12,50 @@ const svg = d3
     .attr("preserveAspectRatio", "xMidYMid meet");
 
 
-// Cargar mapa de Europa
+// ==========================================
+// CIUDADES DEL VIAJE
+// ==========================================
+
+const cities = [
+    {
+        name: "Tolosa",
+        coordinates: [-2.079, 43.135]
+    },
+    {
+        name: "Clermont-Ferrand",
+        coordinates: [3.087, 45.777]
+    },
+    {
+        name: "Múnich",
+        coordinates: [11.582, 48.135]
+    },
+    {
+        name: "Praga",
+        coordinates: [14.438, 50.075]
+    },
+    {
+        name: "Berlín",
+        coordinates: [13.405, 52.520]
+    },
+    {
+        name: "Ámsterdam",
+        coordinates: [4.904, 52.368]
+    },
+    {
+        name: "Brujas",
+        coordinates: [3.224, 51.209]
+    },
+    {
+        name: "París",
+        coordinates: [2.352, 48.857]
+    }
+];
+
+
+// ==========================================
+// CARGAR MAPA
+// ==========================================
+
 d3.json("assets/map/europe.geojson")
     .then((europe) => {
 
@@ -29,19 +72,39 @@ d3.json("assets/map/europe.geojson")
                 europe
             );
 
-        // Convertir coordenadas geográficas en SVG
+        // Generador de formas
         const path = d3
             .geoPath()
             .projection(projection);
 
 
-        // Dibujar países
+        // ==========================================
+        // DIBUJAR PAÍSES
+        // ==========================================
+
         svg
             .selectAll(".country")
             .data(europe.features)
             .join("path")
             .attr("class", "country")
             .attr("d", path);
+
+
+        // ==========================================
+        // CONVERTIR CIUDADES A POSICIONES SVG
+        // ==========================================
+
+        cities.forEach(city => {
+
+            const [x, y] = projection(city.coordinates);
+
+            city.x = x;
+            city.y = y;
+
+        });
+
+
+        console.log("Ciudades posicionadas:", cities);
 
     })
     .catch((error) => {
