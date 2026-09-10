@@ -78,7 +78,7 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // CREAR PUNTOS GEOGRÁFICOS DE LAS CIUDADES
+        // CREAR COLECCIÓN DE CIUDADES
         // ==========================================
 
         const cityFeatures = cities.map(city => ({
@@ -104,8 +104,8 @@ d3.json("./assets/map/europe.geojson")
             .geoMercator()
             .fitExtent(
                 [
-                    [80, 100],
-                    [width - 80, height - 100]
+                    [60, 80],
+                    [width - 60, height - 80]
                 ],
                 cityCollection
             );
@@ -135,7 +135,7 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // POSICIONES DE LAS CIUDADES
+        // CALCULAR POSICIONES
         // ==========================================
 
         cities.forEach(city => {
@@ -149,7 +149,7 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // RECORRIDO
+        // CREAR RECORRIDO
         // ==========================================
 
         const routeLine = d3
@@ -159,7 +159,7 @@ d3.json("./assets/map/europe.geojson")
             .curve(d3.curveCatmullRom.alpha(0.5));
 
 
-        svg
+        const routePath = svg
             .append("path")
             .datum(cities)
             .attr("class", "travel-route")
@@ -167,21 +167,50 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // PUNTOS
+        // ANIMACIÓN DEL RECORRIDO
         // ==========================================
 
-        svg
+        const routeLength = routePath
+            .node()
+            .getTotalLength();
+
+
+        routePath
+            .attr("stroke-dasharray", routeLength)
+            .attr("stroke-dashoffset", routeLength)
+            .transition()
+            .duration(2200)
+            .ease(d3.easeCubicInOut)
+            .attr("stroke-dashoffset", 0);
+
+
+        // ==========================================
+        // PUNTOS DE LAS CIUDADES
+        // ==========================================
+
+        const cityPoints = svg
             .selectAll(".city-point")
             .data(cities)
             .join("circle")
             .attr("class", "city-point")
             .attr("cx", city => city.x)
             .attr("cy", city => city.y)
+            .attr("r", 0);
+
+
+        // ==========================================
+        // ANIMACIÓN DE LOS PUNTOS
+        // ==========================================
+
+        cityPoints
+            .transition()
+            .delay(1800)
+            .duration(500)
             .attr("r", 6);
 
 
         // ==========================================
-        // POSICIONAR BOTONES
+        // COLOCAR BOTONES
         // ==========================================
 
         cities.forEach(city => {
@@ -189,16 +218,30 @@ d3.json("./assets/map/europe.geojson")
             const button = document.getElementById(city.button);
 
             if (!button) {
+                console.error(
+                    "No se encontró:",
+                    city.button
+                );
+
                 return;
             }
+
 
             button.style.left = `${city.x}px`;
             button.style.top = `${city.y}px`;
 
+
+            // Mostrar botón después de comenzar la ruta
+            setTimeout(() => {
+
+                button.classList.add("city-visible");
+
+            }, 1900);
+
         });
 
 
-        console.log("Ruta y ciudades colocadas correctamente.");
+        console.log("Ruta y ciudades preparadas.");
 
     })
     .catch(error => {
