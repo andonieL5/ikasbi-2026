@@ -32,3 +32,19 @@ body {
     height: 100%;
     position: relative;
 }
+#map {
+    background: #dfe8ee;
+    overflow: hidden;
+}
+
+#map svg {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.country {
+    fill: #f7f5ef;
+    stroke: #c4c4c4;
+    stroke-width: 0.7px;
+}
