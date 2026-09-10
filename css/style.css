@@ -1,654 +1,5 @@
 /* ==========================================
-   CONFIGURACIÓN GENERAL
-========================================== */
-
-* {
-    box-sizing: border-box;
-    margin: 0;
-    padding: 0;
-}
-
-html,
-body {
-    width: 100%;
-    height: 100%;
-}
-
-body {
-    font-family: Arial, sans-serif;
-    overflow: hidden;
-    background: #dfe8ee;
-}
-
-
-/* ==========================================
-   APLICACIÓN
-========================================== */
-
-#app {
-    width: 100vw;
-    height: 100vh;
-    position: relative;
-    overflow: hidden;
-}
-
-
-/* ==========================================
-   MAPA
-========================================== */
-
-#map-container {
-    position: absolute;
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-}
-
-#map {
-    position: relative;
-
-    width: 100%;
-    height: 100%;
-
-    background:
-        linear-gradient(
-            135deg,
-            #dfe9ef 0%,
-            #d8e4eb 50%,
-            #dce7ed 100%
-        );
-
-    overflow: hidden;
-}
-
-#map svg {
-    position: absolute;
-
-    inset: 0;
-
-    width: 100%;
-    height: 100%;
-
-    display: block;
-}
-
-
-/* ==========================================
-   PAÍSES
-========================================== */
-
-.country {
-    fill: rgba(250, 249, 245, 0.96);
-
-    stroke: rgba(160, 170, 175, 0.45);
-
-    stroke-width: 0.7px;
-
-    transition: fill 0.3s ease;
-}
-
-
-/* ==========================================
-   RECORRIDO
-========================================== */
-
-.travel-route {
-    fill: none;
-
-    stroke: #ffffff;
-
-    stroke-width: 4px;
-
-    stroke-linecap: round;
-    stroke-linejoin: round;
-
-    filter:
-        drop-shadow(
-            0 2px 4px rgba(0, 0, 0, 0.18)
-        );
-}
-
-
-/* ==========================================
-   PUNTOS DE LAS CIUDADES
-========================================== */
-
-.city-point {
-    fill: #ffffff;
-
-    stroke: #222222;
-
-    stroke-width: 2px;
-
-    filter:
-        drop-shadow(
-            0 3px 5px rgba(0, 0, 0, 0.22)
-        );
-}
-
-
-/* ==========================================
-   BOTONES DE CIUDADES
-========================================== */
-
-.city-button {
-    position: absolute;
-
-    z-index: 20;
-
-    transform:
-        translate(-50%, -50%);
-
-    opacity: 0;
-
-    border: 1px solid rgba(
-        255,
-        255,
-        255,
-        0.75
-    );
-
-    border-radius: 999px;
-
-    padding: 9px 16px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.72
-        );
-
-    color: #151515;
-
-    font-size: 14px;
-
-    font-weight: 600;
-
-    letter-spacing: 0.1px;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 8px 25px rgba(
-            0,
-            0,
-            0,
-            0.12
-        ),
-        inset 0 1px 0 rgba(
-            255,
-            255,
-            255,
-            0.9
-        );
-
-    backdrop-filter: blur(14px);
-    -webkit-backdrop-filter: blur(14px);
-
-    transition:
-        opacity 0.5s ease,
-        transform 0.25s ease,
-        background 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.city-button.city-visible {
-    opacity: 1;
-}
-
-.city-button:hover {
-    transform:
-        translate(-50%, -50%)
-        scale(1.07);
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.92
-        );
-
-    box-shadow:
-        0 12px 30px rgba(
-            0,
-            0,
-            0,
-            0.18
-        ),
-        inset 0 1px 0 rgba(
-            255,
-            255,
-            255,
-            1
-        );
-}
-
-
-/* ==========================================
-   CABECERA PRINCIPAL
-========================================== */
-
-.main-header {
-    position: absolute;
-
-    top: 35px;
-    left: 40px;
-
-    z-index: 30;
-
-    color: #111111;
-
-    pointer-events: none;
-}
-
-.main-header h1 {
-    font-size: clamp(
-        32px,
-        4vw,
-        52px
-    );
-
-    font-weight: 700;
-
-    letter-spacing: -1.5px;
-}
-
-.main-header p {
-    margin-top: 7px;
-
-    font-size: 15px;
-
-    opacity: 0.65;
-}
-
-
-/* ==========================================
-   PANEL DE FOTOS
-========================================== */
-
-#photo-panel {
-    position: absolute;
-
-    top: 20px;
-    right: 20px;
-    bottom: 20px;
-
-    width: min(
-        620px,
-        calc(100vw - 40px)
-    );
-
-    z-index: 100;
-
-    display: flex;
-    flex-direction: column;
-
-    padding: 28px;
-
-    border: 1px solid rgba(
-        255,
-        255,
-        255,
-        0.65
-    );
-
-    border-radius: 30px;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.72
-        );
-
-    backdrop-filter: blur(25px);
-    -webkit-backdrop-filter: blur(25px);
-
-    box-shadow:
-        0 25px 70px rgba(
-            0,
-            0,
-            0,
-            0.22
-        ),
-        inset 0 1px 0 rgba(
-            255,
-            255,
-            255,
-            0.9
-        );
-
-    transform:
-        translateX(
-            calc(100% + 40px)
-        );
-
-    opacity: 0;
-
-    pointer-events: none;
-
-    transition:
-        transform 0.5s
-        cubic-bezier(
-            0.22,
-            1,
-            0.36,
-            1
-        ),
-        opacity 0.35s ease;
-}
-
-
-/* ==========================================
-   PANEL ABIERTO
-========================================== */
-
-#photo-panel.panel-open {
-    transform: translateX(0);
-
-    opacity: 1;
-
-    pointer-events: auto;
-}
-
-
-/* ==========================================
-   CABECERA DEL PANEL
-========================================== */
-
-.panel-header {
-    display: flex;
-
-    align-items: flex-start;
-
-    justify-content: space-between;
-
-    margin-bottom: 22px;
-}
-
-.panel-subtitle {
-    display: block;
-
-    margin-bottom: 5px;
-
-    font-size: 11px;
-
-    font-weight: 700;
-
-    letter-spacing: 2px;
-
-    opacity: 0.5;
-}
-
-#panel-city {
-    font-size: 38px;
-
-    font-weight: 700;
-
-    letter-spacing: -1.5px;
-}
-
-
-/* ==========================================
-   BOTÓN CERRAR PANEL
-========================================== */
-
-#close-panel {
-    width: 42px;
-    height: 42px;
-
-    flex-shrink: 0;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.7
-        );
-
-    color: #111111;
-
-    font-size: 28px;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 5px 15px rgba(
-            0,
-            0,
-            0,
-            0.1
-        );
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-#close-panel:hover {
-    transform: scale(1.08);
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.95
-        );
-}
-
-
-/* ==========================================
-   GALERÍA
-========================================== */
-
-#gallery {
-    flex: 1;
-
-    min-height: 0;
-
-    overflow-y: auto;
-
-    display: grid;
-
-    grid-template-columns:
-        repeat(4, 1fr);
-
-    gap: 16px;
-
-    align-content: start;
-
-    padding: 4px 8px 20px 4px;
-}
-
-
-/* ==========================================
-   FOTOS
-========================================== */
-
-.gallery-photo {
-    position: relative;
-
-    width: 100%;
-
-    aspect-ratio: 1 / 1;
-
-    padding: 0;
-
-    border: none;
-
-    border-radius: 22px !important;
-
-    overflow: hidden;
-
-    background: #eeeeee;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 4px 14px rgba(
-            0,
-            0,
-            0,
-            0.10
-        );
-
-    transition:
-        transform 0.25s ease,
-        box-shadow 0.25s ease;
-}
-
-.gallery-photo:hover {
-    transform: scale(1.035);
-
-    box-shadow:
-        0 10px 25px rgba(
-            0,
-            0,
-            0,
-            0.16
-        );
-}
-
-
-/* ==========================================
-   IMÁGENES
-========================================== */
-
-.gallery-photo img {
-    display: block;
-
-    width: 100%;
-    height: 100%;
-
-    object-fit: cover;
-
-    border-radius: 22px !important;
-
-    transition:
-        transform 0.4s ease;
-}
-
-.gallery-photo:hover img {
-    transform: scale(1.05);
-}
-
-
-/* ==========================================
-   BOTÓN +
-========================================== */
-
-.gallery-add-button {
-    width: 100%;
-
-    aspect-ratio: 1 / 1;
-
-    padding: 0;
-
-    border: 2px dashed rgba(
-        40,
-        40,
-        40,
-        0.20
-    );
-
-    border-radius: 22px !important;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.30
-        );
-
-    color: rgba(
-        30,
-        30,
-        30,
-        0.55
-    );
-
-    font-size: 34px;
-
-    font-weight: 300;
-
-    line-height: 1;
-
-    cursor: pointer;
-
-    backdrop-filter: blur(8px);
-    -webkit-backdrop-filter: blur(8px);
-
-    transition:
-        transform 0.25s ease,
-        background 0.25s ease,
-        border-color 0.25s ease,
-        color 0.25s ease;
-}
-
-.gallery-add-button:hover {
-    transform: scale(1.035);
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.75
-        );
-
-    border-color:
-        rgba(
-            40,
-            40,
-            40,
-            0.4
-        );
-
-    color: #111111;
-}
-
-
-/* ==========================================
-   SCROLLBAR DE LA GALERÍA
-========================================== */
-
-#gallery::-webkit-scrollbar {
-    width: 5px;
-}
-
-#gallery::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-#gallery::-webkit-scrollbar-thumb {
-    background:
-        rgba(
-            0,
-            0,
-            0,
-            0.15
-        );
-
-    border-radius: 999px;
-}
-
-
-/* ==========================================
-   VISOR DE FOTOS
+   VISOR — CONTROLES PREMIUM
 ========================================== */
 
 #photo-viewer {
@@ -658,290 +9,215 @@ body {
 
     z-index: 200;
 
-    display: none;
-
     align-items: center;
     justify-content: center;
 
     background:
-        rgba(
-            0,
-            0,
-            0,
-            0.65
-        );
+        rgba(10, 10, 12, 0.72);
 
-    backdrop-filter: blur(15px);
-    -webkit-backdrop-filter: blur(15px);
+    backdrop-filter: blur(22px);
+    -webkit-backdrop-filter: blur(22px);
 }
 
 
 /* ==========================================
-   IMAGEN DEL VISOR
-========================================== */
-
-#viewer-image {
-    max-width: 90vw;
-    max-height: 90vh;
-
-    object-fit: contain;
-
-    border-radius: 18px;
-
-    box-shadow:
-        0 25px 80px rgba(
-            0,
-            0,
-            0,
-            0.4
-        );
-}
-
-
-/* ==========================================
-   BOTÓN CERRAR VISOR
-========================================== */
-
-#close-viewer {
-    position: absolute;
-
-    top: 25px;
-    right: 25px;
-
-    width: 45px;
-    height: 45px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.85
-        );
-
-    color: #111111;
-
-    font-size: 28px;
-
-    cursor: pointer;
-}
-
-
-/* ==========================================
-   BOTÓN DESCARGAR
-========================================== */
-
-#download-photo {
-    position: absolute;
-
-    top: 25px;
-    right: 80px;
-
-    width: 45px;
-    height: 45px;
-
-    border: none;
-
-    border-radius: 50%;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.85
-        );
-
-    color: #111111;
-
-    font-size: 24px;
-
-    cursor: pointer;
-}
-
-
-/* ==========================================
-   BOTÓN AÑADIR ANTIGUO
-========================================== */
-
-#add-photo-button {
-    display: none;
-}
-
-
-/* ==========================================
-   MÓVIL
-========================================== */
-
-@media (max-width: 700px) {
-
-    #photo-panel {
-        top: 10px;
-        right: 10px;
-        bottom: 10px;
-
-        width:
-            calc(100vw - 20px);
-
-        padding: 22px;
-
-        border-radius: 25px;
-    }
-
-
-    #panel-city {
-        font-size: 32px;
-    }
-
-
-    #gallery {
-        grid-template-columns:
-            repeat(2, 1fr);
-
-        gap: 10px;
-    }
-
-
-    .gallery-photo,
-    .gallery-add-button {
-        border-radius: 18px !important;
-    }
-
-
-    .gallery-photo img {
-        border-radius: 18px !important;
-    }
-
-
-    .main-header {
-        top: 20px;
-        left: 20px;
-    }
-
-
-    .main-header h1 {
-        font-size: 34px;
-    }
-
-
-    .main-header p {
-        font-size: 13px;
-    }
-
-
-    #close-viewer {
-        top: 15px;
-        right: 15px;
-    }
-
-
-    #download-photo {
-        top: 15px;
-        right: 70px;
-    }
-
-}
-/* ==========================================
-   ANIMACIÓN DEL VISOR
-========================================== */
-
-#photo-viewer {
-    opacity: 0;
-
-    transition:
-        opacity 0.25s ease;
-}
-
-#photo-viewer.viewer-open {
-    opacity: 1;
-}
-
-
-/* ==========================================
-   ANIMACIÓN DE LA FOTO
+   FOTO
 ========================================== */
 
 #photo-viewer #viewer-image {
-    transform:
-        scale(0.94);
 
-    opacity: 0;
+    position: relative;
+
+    z-index: 201;
+
+    max-width: min(
+        78vw,
+        1200px
+    );
+
+    max-height: 82vh;
+
+    object-fit: contain;
+
+    border-radius: 20px;
+
+    box-shadow:
+        0 30px 100px
+        rgba(0, 0, 0, 0.45);
 
     transition:
-        transform 0.35s
-        cubic-bezier(
-            0.22,
-            1,
-            0.36,
-            1
-        ),
-        opacity 0.25s ease;
-}
-
-#photo-viewer.viewer-open #viewer-image {
-    transform:
-        scale(1);
-
-    opacity: 1;
+        opacity 0.2s ease,
+        transform 0.25s ease;
 }
 
 
 /* ==========================================
-   BOTONES DEL VISOR
+   CONTROLES GENERALES
 ========================================== */
 
-#close-viewer,
-#download-photo {
-    z-index: 10;
+#photo-viewer button {
+
+    position: absolute;
+
+    z-index: 220;
+
+    cursor: pointer;
+
+    -webkit-tap-highlight-color:
+        transparent;
+}
+
+
+/* ==========================================
+   CERRAR
+========================================== */
+
+#close-viewer {
+
+    top: 28px;
+    right: 28px;
+
+    width: 50px;
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid
+        rgba(255,255,255,0.32);
+
+    border-radius: 50%;
+
+    background:
+        rgba(255,255,255,0.12);
+
+    color: white;
+
+    font-size: 29px;
+
+    font-weight: 300;
+
+    line-height: 1;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,0.25);
 
     transition:
         transform 0.2s ease,
         background 0.2s ease;
 }
 
-#close-viewer:hover,
-#download-photo:hover {
+#close-viewer:hover {
+
     transform: scale(1.08);
 
     background:
-        rgba(
-            255,
-            255,
-            255,
-            0.98
-        );
+        rgba(255,255,255,0.23);
+
 }
 
 
 /* ==========================================
-   MÓVIL
+   DESCARGAR
 ========================================== */
 
-@media (max-width: 700px) {
+#download-photo {
 
-    #viewer-image {
-        max-width: 94vw;
-        max-height: 82vh;
+    top: 28px;
+    right: 92px;
 
-        border-radius: 16px;
-    }
+    height: 50px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    gap: 9px;
+
+    padding:
+        0 17px;
+
+    border: 1px solid
+        rgba(255,255,255,0.32);
+
+    border-radius: 999px;
+
+    background:
+        rgba(255,255,255,0.12);
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.2px;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 8px 30px
+        rgba(0,0,0,0.25),
+        inset 0 1px 0
+        rgba(255,255,255,0.18);
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+#download-photo svg {
+
+    width: 19px;
+    height: 19px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
 
 }
+
+
+#download-photo:hover {
+
+    transform:
+        translateY(-1px)
+        scale(1.04);
+
+    background:
+        rgba(255,255,255,0.24);
+
+    border-color:
+        rgba(255,255,255,0.55);
+
+}
+
+
 /* ==========================================
-   FLECHAS DEL VISOR
+   FLECHAS
 ========================================== */
 
 .viewer-arrow {
-    position: absolute;
 
     top: 50%;
-
-    transform:
-        translateY(-50%);
 
     width: 58px;
     height: 58px;
@@ -951,51 +227,24 @@ body {
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(
-        255,
-        255,
-        255,
-        0.55
-    );
+    border: 1px solid
+        rgba(255,255,255,0.30);
 
     border-radius: 50%;
 
     background:
-        rgba(
-            255,
-            255,
-            255,
-            0.16
-        );
+        rgba(255,255,255,0.11);
 
     color: white;
-
-    font-family: Arial, sans-serif;
-
-    font-size: 48px;
-
-    font-weight: 200;
-
-    line-height: 1;
-
-    cursor: pointer;
 
     backdrop-filter: blur(18px);
     -webkit-backdrop-filter: blur(18px);
 
     box-shadow:
-        0 8px 30px rgba(
-            0,
-            0,
-            0,
-            0.22
-        ),
-        inset 0 1px 0 rgba(
-            255,
-            255,
-            255,
-            0.35
-        );
+        0 10px 35px
+        rgba(0,0,0,0.28),
+        inset 0 1px 0
+        rgba(255,255,255,0.18);
 
     transition:
         transform 0.2s ease,
@@ -1003,235 +252,124 @@ body {
         border-color 0.2s ease;
 }
 
+
+.viewer-arrow svg {
+
+    width: 27px;
+    height: 27px;
+
+    fill: none;
+
+    stroke: currentColor;
+
+    stroke-width: 1.8;
+
+    stroke-linecap: round;
+
+    stroke-linejoin: round;
+
+}
+
+
+.viewer-arrow-left {
+
+    left: 32px;
+
+    transform:
+        translateY(-50%);
+}
+
+
+.viewer-arrow-right {
+
+    right: 32px;
+
+    transform:
+        translateY(-50%);
+}
+
+
 .viewer-arrow:hover {
+
+    background:
+        rgba(255,255,255,0.24);
+
+    border-color:
+        rgba(255,255,255,0.60);
+
+}
+
+
+.viewer-arrow-left:hover {
+
     transform:
         translateY(-50%)
         scale(1.08);
 
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.28
-        );
-
-    border-color:
-        rgba(
-            255,
-            255,
-            255,
-            0.85
-        );
 }
 
 
-#previous-photo {
-    left: 30px;
-}
-
-
-#next-photo {
-    right: 30px;
-}
-
-
-/* ==========================================
-   BOTÓN DESCARGA PREMIUM
-========================================== */
-
-#download-photo {
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    width: 48px;
-    height: 48px;
-
-    border: 1px solid rgba(
-        255,
-        255,
-        255,
-        0.55
-    );
-
-    border-radius: 50%;
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.16
-        );
-
-    color: white;
-
-    cursor: pointer;
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 8px 25px rgba(
-            0,
-            0,
-            0,
-            0.20
-        ),
-        inset 0 1px 0 rgba(
-            255,
-            255,
-            255,
-            0.35
-        );
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease,
-        border-color 0.2s ease;
-}
-
-
-#download-photo span {
-    display: block;
-
-    font-size: 25px;
-
-    font-weight: 300;
-
-    line-height: 1;
+.viewer-arrow-right:hover {
 
     transform:
-        translateY(-1px);
-}
+        translateY(-50%)
+        scale(1.08);
 
-
-#download-photo:hover {
-    transform: scale(1.08);
-
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.28
-        );
-
-    border-color:
-        rgba(
-            255,
-            255,
-            255,
-            0.85
-        );
 }
 
 
 /* ==========================================
-   CONTADOR DE FOTOS
+   CONTADOR
 ========================================== */
 
 #photo-counter {
+
     position: absolute;
 
-    bottom: 25px;
+    z-index: 220;
+
+    bottom: 28px;
     left: 50%;
 
     transform:
         translateX(-50%);
 
-    padding: 8px 14px;
+    padding:
+        8px 15px;
 
-    border: 1px solid rgba(
-        255,
-        255,
-        255,
-        0.35
-    );
+    border: 1px solid
+        rgba(255,255,255,0.25);
 
     border-radius: 999px;
 
     background:
-        rgba(
-            0,
-            0,
-            0,
-            0.25
-        );
+        rgba(0,0,0,0.28);
 
     color: white;
 
-    font-size: 13px;
+    font-size: 12px;
 
     font-weight: 600;
 
-    letter-spacing: 0.5px;
+    letter-spacing: 0.7px;
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
 
-    box-shadow:
-        0 5px 20px rgba(
-            0,
-            0,
-            0,
-            0.15
-        );
 }
 
 
 /* ==========================================
-   BOTÓN CERRAR VISOR
+   ANIMACIÓN
 ========================================== */
 
-#close-viewer {
-    border: 1px solid rgba(
-        255,
-        255,
-        255,
-        0.55
-    );
+#photo-viewer #viewer-image.photo-changing {
 
-    background:
-        rgba(
-            255,
-            255,
-            255,
-            0.16
-        );
-
-    color: white;
-
-    backdrop-filter: blur(18px);
-    -webkit-backdrop-filter: blur(18px);
-
-    box-shadow:
-        0 8px 25px rgba(
-            0,
-            0,
-            0,
-            0.20
-        ),
-        inset 0 1px 0 rgba(
-            255,
-            255,
-            255,
-            0.35
-        );
-}
-
-
-/* ==========================================
-   ANIMACIÓN AL CAMBIAR FOTO
-========================================== */
-
-#viewer-image.photo-changing {
     opacity: 0;
 
     transform:
         scale(0.97);
+
 }
 
 
@@ -1241,32 +379,82 @@ body {
 
 @media (max-width: 700px) {
 
-    .viewer-arrow {
-        width: 46px;
-        height: 46px;
+    #photo-viewer #viewer-image {
 
-        font-size: 38px;
+        max-width: 88vw;
+
+        max-height: 76vh;
+
+        border-radius: 16px;
+
     }
 
 
-    #previous-photo {
-        left: 10px;
-    }
+    #close-viewer {
 
+        top: 16px;
+        right: 16px;
 
-    #next-photo {
-        right: 10px;
-    }
+        width: 45px;
+        height: 45px;
 
-
-    #photo-counter {
-        bottom: 18px;
     }
 
 
     #download-photo {
-        width: 44px;
-        height: 44px;
+
+        top: 16px;
+        right: 70px;
+
+        height: 45px;
+
+        padding:
+            0 14px;
+
+    }
+
+
+    #download-photo span {
+
+        display: none;
+
+    }
+
+
+    .viewer-arrow {
+
+        width: 46px;
+        height: 46px;
+
+    }
+
+
+    .viewer-arrow svg {
+
+        width: 23px;
+        height: 23px;
+
+    }
+
+
+    .viewer-arrow-left {
+
+        left: 10px;
+
+    }
+
+
+    .viewer-arrow-right {
+
+        right: 10px;
+
+    }
+
+
+    #photo-counter {
+
+        bottom: 16px;
+
     }
 
 }
