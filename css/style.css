@@ -931,3 +931,342 @@ body {
     }
 
 }
+/* ==========================================
+   FLECHAS DEL VISOR
+========================================== */
+
+.viewer-arrow {
+    position: absolute;
+
+    top: 50%;
+
+    transform:
+        translateY(-50%);
+
+    width: 58px;
+    height: 58px;
+
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    border: 1px solid rgba(
+        255,
+        255,
+        255,
+        0.55
+    );
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.16
+        );
+
+    color: white;
+
+    font-family: Arial, sans-serif;
+
+    font-size: 48px;
+
+    font-weight: 200;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 8px 30px rgba(
+            0,
+            0,
+            0,
+            0.22
+        ),
+        inset 0 1px 0 rgba(
+            255,
+            255,
+            255,
+            0.35
+        );
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+.viewer-arrow:hover {
+    transform:
+        translateY(-50%)
+        scale(1.08);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.28
+        );
+
+    border-color:
+        rgba(
+            255,
+            255,
+            255,
+            0.85
+        );
+}
+
+
+#previous-photo {
+    left: 30px;
+}
+
+
+#next-photo {
+    right: 30px;
+}
+
+
+/* ==========================================
+   BOTÓN DESCARGA PREMIUM
+========================================== */
+
+#download-photo {
+    display: flex;
+
+    align-items: center;
+    justify-content: center;
+
+    width: 48px;
+    height: 48px;
+
+    border: 1px solid rgba(
+        255,
+        255,
+        255,
+        0.55
+    );
+
+    border-radius: 50%;
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.16
+        );
+
+    color: white;
+
+    cursor: pointer;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 8px 25px rgba(
+            0,
+            0,
+            0,
+            0.20
+        ),
+        inset 0 1px 0 rgba(
+            255,
+            255,
+            255,
+            0.35
+        );
+
+    transition:
+        transform 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+#download-photo span {
+    display: block;
+
+    font-size: 25px;
+
+    font-weight: 300;
+
+    line-height: 1;
+
+    transform:
+        translateY(-1px);
+}
+
+
+#download-photo:hover {
+    transform: scale(1.08);
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.28
+        );
+
+    border-color:
+        rgba(
+            255,
+            255,
+            255,
+            0.85
+        );
+}
+
+
+/* ==========================================
+   CONTADOR DE FOTOS
+========================================== */
+
+#photo-counter {
+    position: absolute;
+
+    bottom: 25px;
+    left: 50%;
+
+    transform:
+        translateX(-50%);
+
+    padding: 8px 14px;
+
+    border: 1px solid rgba(
+        255,
+        255,
+        255,
+        0.35
+    );
+
+    border-radius: 999px;
+
+    background:
+        rgba(
+            0,
+            0,
+            0,
+            0.25
+        );
+
+    color: white;
+
+    font-size: 13px;
+
+    font-weight: 600;
+
+    letter-spacing: 0.5px;
+
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+
+    box-shadow:
+        0 5px 20px rgba(
+            0,
+            0,
+            0,
+            0.15
+        );
+}
+
+
+/* ==========================================
+   BOTÓN CERRAR VISOR
+========================================== */
+
+#close-viewer {
+    border: 1px solid rgba(
+        255,
+        255,
+        255,
+        0.55
+    );
+
+    background:
+        rgba(
+            255,
+            255,
+            255,
+            0.16
+        );
+
+    color: white;
+
+    backdrop-filter: blur(18px);
+    -webkit-backdrop-filter: blur(18px);
+
+    box-shadow:
+        0 8px 25px rgba(
+            0,
+            0,
+            0,
+            0.20
+        ),
+        inset 0 1px 0 rgba(
+            255,
+            255,
+            255,
+            0.35
+        );
+}
+
+
+/* ==========================================
+   ANIMACIÓN AL CAMBIAR FOTO
+========================================== */
+
+#viewer-image.photo-changing {
+    opacity: 0;
+
+    transform:
+        scale(0.97);
+}
+
+
+/* ==========================================
+   MÓVIL
+========================================== */
+
+@media (max-width: 700px) {
+
+    .viewer-arrow {
+        width: 46px;
+        height: 46px;
+
+        font-size: 38px;
+    }
+
+
+    #previous-photo {
+        left: 10px;
+    }
+
+
+    #next-photo {
+        right: 10px;
+    }
+
+
+    #photo-counter {
+        bottom: 18px;
+    }
+
+
+    #download-photo {
+        width: 44px;
+        height: 44px;
+    }
+
+}
