@@ -8,18 +8,75 @@ const panelCity = document.getElementById("panel-city");
 
 
 // ==========================================
+// CIUDAD ACTUAL
+// ==========================================
+
+let currentCity = null;
+
+
+// ==========================================
 // ABRIR PANEL DE UNA CIUDAD
 // ==========================================
 
 function openCity(cityName) {
 
-    // Cambiar el título
+    // Si ya estamos en esa ciudad,
+    // no hacemos ninguna animación
+    if (
+        currentCity === cityName &&
+        photoPanel.classList.contains("panel-open")
+    ) {
+        return;
+    }
+
+
+    // ==========================================
+    // SI HAY OTRA CIUDAD ABIERTA
+    // ==========================================
+
+    if (
+        currentCity !== null &&
+        photoPanel.classList.contains("panel-open")
+    ) {
+
+        // Cerrar temporalmente el panel
+        photoPanel.classList.remove("panel-open");
+
+
+        // Esperar a que termine la animación
+        setTimeout(() => {
+
+            // Cambiar ciudad
+            panelCity.textContent = cityName;
+
+            currentCity = cityName;
+
+
+            // Volver a abrir
+            photoPanel.classList.add("panel-open");
+
+        }, 350);
+
+
+        return;
+    }
+
+
+    // ==========================================
+    // PRIMERA APERTURA
+    // ==========================================
+
     panelCity.textContent = cityName;
 
-    // Abrir el panel
+    currentCity = cityName;
+
     photoPanel.classList.add("panel-open");
 
-    console.log("Ciudad abierta:", cityName);
+
+    console.log(
+        "Ciudad abierta:",
+        cityName
+    );
 }
 
 
@@ -29,32 +86,45 @@ function openCity(cityName) {
 
 function closeCityPanel() {
 
-    photoPanel.classList.remove("panel-open");
+    photoPanel.classList.remove(
+        "panel-open"
+    );
 
-    console.log("Panel cerrado");
+    currentCity = null;
+
+
+    console.log(
+        "Panel cerrado"
+    );
 }
 
 
 // ==========================================
-// PREPARAR BOTONES
+// BOTONES DE LAS CIUDADES
 // ==========================================
 
 function setupCityButtons() {
 
     const cityButtons =
-        document.querySelectorAll(".city-button");
+        document.querySelectorAll(
+            ".city-button"
+        );
 
 
     cityButtons.forEach(button => {
 
-        button.addEventListener("click", () => {
+        button.addEventListener(
+            "click",
+            () => {
 
-            const cityName =
-                button.textContent.trim();
+                const cityName =
+                    button.textContent.trim();
 
-            openCity(cityName);
 
-        });
+                openCity(cityName);
+
+            }
+        );
 
     });
 
@@ -62,7 +132,7 @@ function setupCityButtons() {
 
 
 // ==========================================
-// BOTÓN DE CERRAR
+// BOTÓN CERRAR
 // ==========================================
 
 closePanel.addEventListener(
