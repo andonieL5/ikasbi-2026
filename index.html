@@ -1,15 +1,159 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
     <title>IKASBI 2026</title>
+
+    <link rel="stylesheet" href="css/style.css">
 </head>
 
 <body>
 
-    <h1>IKASBI 2026</h1>
-    <p>El viaje está a punto de comenzar...</p>
+    <!-- =========================================
+         PANTALLA PRINCIPAL
+    ========================================== -->
+
+    <main id="app">
+
+        <!-- TÍTULO -->
+        <header class="main-header">
+            <h1>IKASBI 2026</h1>
+            <p>El viaje que nunca olvidaremos</p>
+        </header>
+
+
+        <!-- =====================================
+             MAPA
+        ====================================== -->
+
+        <section id="map-container">
+
+            <!-- Aquí colocaremos posteriormente
+                 el mapa vectorial de Europa -->
+
+            <div id="map">
+                
+                <!-- Recorrido -->
+                <div id="route"></div>
+
+
+                <!-- CIUDADES -->
+
+                <button class="city-button" id="city-tolosa">
+                    Tolosa
+                </button>
+
+                <button class="city-button" id="city-clermont">
+                    Clermont-Ferrand
+                </button>
+
+                <button class="city-button" id="city-munich">
+                    Múnich
+                </button>
+
+                <button class="city-button" id="city-prague">
+                    Praga
+                </button>
+
+                <button class="city-button" id="city-berlin">
+                    Berlín
+                </button>
+
+                <button class="city-button" id="city-amsterdam">
+                    Ámsterdam
+                </button>
+
+                <button class="city-button" id="city-bruges">
+                    Brujas
+                </button>
+
+                <button class="city-button" id="city-paris">
+                    París
+                </button>
+
+            </div>
+
+        </section>
+
+
+        <!-- =====================================
+             PANEL LATERAL DE FOTOS
+        ====================================== -->
+
+        <aside id="photo-panel">
+
+            <!-- Cabecera del panel -->
+
+            <div class="panel-header">
+
+                <div>
+                    <span class="panel-subtitle">
+                        FOTOS DEL VIAJE
+                    </span>
+
+                    <h2 id="panel-city">
+                        París
+                    </h2>
+                </div>
+
+                <button id="close-panel" aria-label="Cerrar">
+                    ×
+                </button>
+
+            </div>
+
+
+            <!-- Galería -->
+
+            <div id="gallery">
+
+                <!--
+                    Las fotos se cargarán aquí
+                    mediante JavaScript.
+                -->
+
+            </div>
+
+
+            <!-- Botón para añadir fotos -->
+
+            <button id="add-photo-button" aria-label="Añadir fotografías">
+                +
+            </button>
+
+        </aside>
+
+
+        <!-- =====================================
+             VISOR DE FOTO
+        ====================================== -->
+
+        <div id="photo-viewer">
+
+            <button id="close-viewer" aria-label="Cerrar foto">
+                ×
+            </button>
+
+            <button id="download-photo" aria-label="Descargar foto">
+                ↓
+            </button>
+
+            <img id="viewer-image" src="" alt="Fotografía del viaje">
+
+        </div>
+
+    </main>
+
+
+    <!-- JavaScript -->
+
+    <script src="js/app.js"></script>
+    <script src="js/map.js"></script>
+    <script src="js/gallery.js"></script>
 
 </body>
+
 </html>
