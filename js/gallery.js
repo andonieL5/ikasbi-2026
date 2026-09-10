@@ -6,12 +6,25 @@ const gallery = document.getElementById("gallery");
 
 
 // ==========================================
-// FOTOS DE PRUEBA
+// VISOR DE FOTOS
 // ==========================================
 
-// De momento utilizamos imágenes de prueba.
-// Más adelante estas imágenes vendrán
-// directamente desde Firebase.
+const photoViewer =
+    document.getElementById("photo-viewer");
+
+const viewerImage =
+    document.getElementById("viewer-image");
+
+const closeViewer =
+    document.getElementById("close-viewer");
+
+const downloadPhoto =
+    document.getElementById("download-photo");
+
+
+// ==========================================
+// FOTOS DE PRUEBA
+// ==========================================
 
 const testPhotos = [
     "https://images.unsplash.com/photo-1500534623283-312aade485b7",
@@ -27,6 +40,45 @@ const testPhotos = [
     "https://images.unsplash.com/photo-1500534623283-312aade485b7",
     "https://images.unsplash.com/photo-1470770841072-f978cf4d019e"
 ];
+
+
+// ==========================================
+// ABRIR VISOR
+// ==========================================
+
+function openPhoto(photoUrl) {
+
+    viewerImage.src =
+        `${photoUrl}?auto=format&fit=max&w=1800&q=90`;
+
+    photoViewer.style.display = "flex";
+
+    requestAnimationFrame(() => {
+        photoViewer.classList.add("viewer-open");
+    });
+
+    document.body.style.overflow = "hidden";
+}
+
+
+// ==========================================
+// CERRAR VISOR
+// ==========================================
+
+function closePhotoViewer() {
+
+    photoViewer.classList.remove("viewer-open");
+
+    setTimeout(() => {
+
+        photoViewer.style.display = "none";
+
+        viewerImage.src = "";
+
+    }, 250);
+
+    document.body.style.overflow = "hidden";
+}
 
 
 // ==========================================
@@ -55,12 +107,11 @@ function renderGallery() {
         "Añadir fotografías"
     );
 
-
     gallery.appendChild(addButton);
 
 
     // ==========================================
-    // CREAR FOTOS
+    // FOTOS
     // ==========================================
 
     testPhotos.forEach(
@@ -92,10 +143,106 @@ function renderGallery() {
 
             gallery.appendChild(photoElement);
 
+
+            // ==========================================
+            // ABRIR FOTO AL HACER CLICK
+            // ==========================================
+
+            photoElement.addEventListener(
+                "click",
+                () => {
+
+                    openPhoto(photo);
+
+                }
+            );
+
         }
     );
-
 }
+
+
+// ==========================================
+// CERRAR CON BOTÓN X
+// ==========================================
+
+closeViewer.addEventListener(
+    "click",
+    closePhotoViewer
+);
+
+
+// ==========================================
+// DESCARGAR FOTO
+// ==========================================
+
+downloadPhoto.addEventListener(
+    "click",
+    () => {
+
+        if (!viewerImage.src) {
+            return;
+        }
+
+        const link =
+            document.createElement("a");
+
+        link.href =
+            viewerImage.src;
+
+        link.download =
+            "ikasbi-2026-foto.jpg";
+
+        link.target =
+            "_blank";
+
+        link.click();
+
+    }
+);
+
+
+// ==========================================
+// CERRAR AL PULSAR FUERA
+// ==========================================
+
+photoViewer.addEventListener(
+    "click",
+    (event) => {
+
+        if (
+            event.target === photoViewer
+        ) {
+
+            closePhotoViewer();
+
+        }
+
+    }
+);
+
+
+// ==========================================
+// CERRAR CON ESC
+// ==========================================
+
+document.addEventListener(
+    "keydown",
+    (event) => {
+
+        if (
+            event.key === "Escape" &&
+            photoViewer.classList.contains(
+                "viewer-open"
+            )
+        ) {
+
+            closePhotoViewer();
+
+        }
+
+    }
+);
 
 
 // ==========================================
