@@ -135,7 +135,7 @@ d3.json("./assets/map/europe.geojson")
 
 
         // ==========================================
-        // CALCULAR POSICIONES
+        // CALCULAR POSICIONES DE LAS CIUDADES
         // ==========================================
 
         cities.forEach(city => {
@@ -156,7 +156,7 @@ d3.json("./assets/map/europe.geojson")
             .line()
             .x(city => city.x)
             .y(city => city.y)
-            .curve(d3.curveCatmullRom.alpha(0.5));
+            .curve(d3.curveLinear);
 
 
         const routePath = svg
@@ -218,6 +218,7 @@ d3.json("./assets/map/europe.geojson")
             const button = document.getElementById(city.button);
 
             if (!button) {
+
                 console.error(
                     "No se encontró:",
                     city.button
@@ -231,7 +232,10 @@ d3.json("./assets/map/europe.geojson")
             button.style.top = `${city.y}px`;
 
 
-            // Mostrar botón después de comenzar la ruta
+            // ==========================================
+            // MOSTRAR BOTÓN
+            // ==========================================
+
             setTimeout(() => {
 
                 button.classList.add("city-visible");
