@@ -2,18 +2,20 @@
 <html lang="es">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <meta name="theme-color" content="#ffffff">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#f7f8fa">
     <title>IKASBI 2026</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
+
 <body>
     <main id="app">
         <header class="main-header">
-            <h1>IKASBI 2026</h1>
+            <span class="header-kicker">VIAJE DE FIN DE CURSO</span>
+            <h1>IKASBI <span>2026</span></h1>
         </header>
 
-        <section id="map-container" aria-label="Mapa del viaje">
+        <section id="map-container" aria-label="Mapa del recorrido por Europa">
             <div id="map">
                 <div id="route" aria-hidden="true"></div>
 
@@ -28,39 +30,33 @@
             </div>
         </section>
 
-        <aside id="photo-panel" aria-label="Galería de fotos" aria-hidden="true">
+        <aside id="photo-panel" aria-label="Fotos de la ciudad" aria-hidden="true">
             <div class="panel-header">
                 <div>
                     <span class="panel-subtitle">FOTOS DEL VIAJE</span>
-                    <h2 id="panel-city">Tolosa</h2>
+                    <h2 id="panel-city">París</h2>
                 </div>
-                <button id="close-panel" type="button" aria-label="Cerrar galería">×</button>
+
+                <button id="close-panel" type="button" aria-label="Cerrar panel">×</button>
             </div>
 
             <div id="gallery"></div>
-            <input id="photo-file-input" type="file" accept="image/*" multiple hidden>
+
+            <!-- Se mantiene por compatibilidad; el botón + de la cuadrícula es el principal. -->
+            <button id="add-photo-button" type="button" aria-label="Añadir fotografías">
+                Añadir fotos
+            </button>
         </aside>
 
         <div id="photo-viewer" aria-hidden="true">
             <button id="close-viewer" type="button" aria-label="Cerrar fotografía">×</button>
 
-            <button id="previous-photo" class="viewer-arrow viewer-arrow-left"
-                    type="button" aria-label="Fotografía anterior">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M15 5l-7 7 7 7"></path>
-                </svg>
-            </button>
-
-            <button id="next-photo" class="viewer-arrow viewer-arrow-right"
-                    type="button" aria-label="Fotografía siguiente">
-                <svg viewBox="0 0 24 24" aria-hidden="true">
-                    <path d="M9 5l7 7-7 7"></path>
-                </svg>
-            </button>
-
-            <div id="photo-counter" aria-live="polite">0 / 0</div>
-
-            <button id="download-photo" type="button" aria-label="Descargar fotografía">
+            <button
+                id="download-photo"
+                type="button"
+                aria-label="Descargar fotografía"
+                title="Descargar fotografía"
+            >
                 <svg viewBox="0 0 24 24" aria-hidden="true">
                     <path d="M12 3v11"></path>
                     <path d="M7 10l5 5 5-5"></path>
@@ -69,7 +65,31 @@
                 <span>Descargar</span>
             </button>
 
-            <img id="viewer-image" alt="Fotografía del viaje">
+            <button
+                id="previous-photo"
+                class="viewer-arrow viewer-arrow-left"
+                type="button"
+                aria-label="Fotografía anterior"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 5l-7 7 7 7"></path>
+                </svg>
+            </button>
+
+            <button
+                id="next-photo"
+                class="viewer-arrow viewer-arrow-right"
+                type="button"
+                aria-label="Fotografía siguiente"
+            >
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 5l7 7-7 7"></path>
+                </svg>
+            </button>
+
+            <div id="photo-counter" aria-live="polite">1 / 1</div>
+
+            <img id="viewer-image" src="" alt="Fotografía del viaje">
         </div>
     </main>
 
