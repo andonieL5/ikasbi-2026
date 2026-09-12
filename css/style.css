@@ -1,15 +1,16 @@
-/* =========================================================
-   IKASBI 2026 — ESTILO CLARO, MAPA A PANTALLA COMPLETA
-   ========================================================= */
+/* ==========================================
+   IKASBI 2026 — ESTÉTICA CLARA
+   ========================================== */
 
 :root {
     color-scheme: light;
-    --page-bg: #ffffff;
-    --text: #1d1d1f;
-    --muted: #77777c;
-    --border: #e5e5e7;
-    --accent: #0071e3;
-    --header-height: 76px;
+    --page-bg: #f7f8fa;
+    --panel-bg: rgba(255, 255, 255, 0.94);
+    --text: #202124;
+    --muted: #7b8088;
+    --line: rgba(32, 33, 36, 0.10);
+    --accent: #2463eb;
+    --shadow: 0 18px 55px rgba(25, 35, 55, 0.14);
 }
 
 *,
@@ -21,77 +22,87 @@
 html,
 body {
     width: 100%;
-    min-width: 320px;
     min-height: 100%;
     margin: 0;
-    background: var(--page-bg);
-    color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    -webkit-font-smoothing: antialiased;
 }
 
 body {
     overflow: hidden;
+    background: var(--page-bg);
+    color: var(--text);
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    -webkit-font-smoothing: antialiased;
 }
 
 button {
     font: inherit;
-    -webkit-tap-highlight-color: transparent;
 }
 
 button:focus-visible {
-    outline: 3px solid var(--accent);
+    outline: 3px solid rgba(36, 99, 235, 0.65);
     outline-offset: 3px;
 }
 
+/* ==========================================
+   CABECERA
+   ========================================== */
+
 #app {
+    position: relative;
     width: 100%;
     min-height: 100vh;
     min-height: 100dvh;
 }
 
-/* CABECERA */
-
 .main-header {
-    position: relative;
+    position: absolute;
     z-index: 5;
-    display: flex;
-    align-items: center;
-    height: var(--header-height);
-    padding: 0 clamp(20px, 4vw, 56px);
-    border-bottom: 1px solid #ededed;
-    background: #fff;
+    top: 25px;
+    left: 30px;
+    pointer-events: none;
+}
+
+.header-kicker {
+    display: block;
+    margin-bottom: 5px;
+    color: #858b94;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 0.19em;
 }
 
 .main-header h1 {
     margin: 0;
-    font-size: clamp(27px, 3vw, 38px);
-    font-weight: 700;
-    letter-spacing: -0.055em;
+    color: #222831;
+    font-size: clamp(22px, 3vw, 32px);
+    font-weight: 750;
+    letter-spacing: -0.07em;
 }
 
-/* MAPA: ocupa todo el espacio restante */
+.main-header h1 span {
+    color: #8b929c;
+    font-weight: 400;
+}
+
+/* ==========================================
+   MAPA BLANCO A PANTALLA COMPLETA
+   ========================================== */
 
 #map-container {
-    position: relative;
-    width: 100%;
-    height: calc(100vh - var(--header-height));
-    height: calc(100dvh - var(--header-height));
-    min-height: 260px;
-    padding: 0;
+    position: absolute;
+    inset: 0;
     overflow: hidden;
     background: #fff;
 }
 
 #map {
-    position: relative;
-    width: 100%;
-    height: 100%;
+    position: absolute;
+    inset: 0;
     overflow: hidden;
     background: #fff;
 }
 
-#map svg {
+#map > svg {
     position: absolute;
     inset: 0;
     display: block;
@@ -100,16 +111,16 @@ button:focus-visible {
     overflow: visible;
 }
 
-.countries .country {
-    fill: #f2f3f4;
-    stroke: #cfd2d5;
+.country {
+    fill: #f2f4f6;
+    stroke: #dfe3e8;
     stroke-width: 0.7;
     vector-effect: non-scaling-stroke;
 }
 
 .travel-route {
     fill: none;
-    stroke: #0071e3;
+    stroke: #4f83e8;
     stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -117,38 +128,33 @@ button:focus-visible {
 }
 
 .city-point {
-    fill: #0071e3;
-    stroke: #fff;
+    fill: #fff;
+    stroke: #3975e8;
     stroke-width: 2.5;
     vector-effect: non-scaling-stroke;
 }
 
-/* Los botones se colocan mediante map.js */
-
 .city-button {
     position: absolute;
     z-index: 2;
-    display: block;
-    max-width: min(190px, 45vw);
-    min-height: 36px;
-    padding: 8px 13px;
-    border: 1px solid #dedee2;
+    transform: translate(-50%, -50%);
+    max-width: min(190px, 42vw);
+    padding: 9px 14px;
+    border: 1px solid rgba(33, 43, 58, 0.12);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.97);
-    color: #1d1d1f;
+    background: rgba(255, 255, 255, 0.94);
+    box-shadow: 0 3px 12px rgba(40, 50, 70, 0.08);
+    color: #303844;
     font-size: 12px;
     font-weight: 600;
-    line-height: 1.15;
     white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 2px 9px rgba(0, 0, 0, 0.08);
     opacity: 0;
-    transform: translate(-50%, -50%);
     transition:
-        opacity 180ms ease,
-        background-color 150ms ease,
-        color 150ms ease,
-        border-color 150ms ease;
+        opacity 0.35s ease,
+        background 0.2s ease,
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
 }
 
 .city-button.city-visible {
@@ -156,33 +162,44 @@ button:focus-visible {
 }
 
 .city-button:hover,
-.city-button:active {
-    border-color: var(--accent);
-    background: var(--accent);
+.city-button:focus-visible {
+    border-color: rgba(57, 117, 232, 0.45);
+    background: #fff;
+    box-shadow: 0 5px 18px rgba(40, 70, 130, 0.15);
+}
+
+.city-button.city-active {
+    border-color: #3975e8;
+    background: #3975e8;
     color: #fff;
 }
 
-/* PANEL DE CIUDAD */
+/* ==========================================
+   PANEL LATERAL DE CIUDAD
+   ========================================== */
 
 #photo-panel {
-    position: fixed;
+    position: absolute;
     z-index: 20;
-    top: 0;
-    right: 0;
-    bottom: 0;
+    top: 16px;
+    right: 16px;
+    bottom: 16px;
     display: flex;
     flex-direction: column;
-    width: min(620px, 100%);
-    max-width: 100%;
+    width: min(520px, calc(100% - 32px));
+    min-width: 0;
     overflow: hidden;
-    border-left: 1px solid var(--border);
-    background: #fff;
-    box-shadow: -12px 0 40px rgba(0, 0, 0, 0.12);
-    transform: translateX(102%);
+    border: 1px solid rgba(255, 255, 255, 0.85);
+    border-radius: 25px;
+    background: var(--panel-bg);
+    box-shadow: var(--shadow);
+    -webkit-backdrop-filter: blur(24px);
+    backdrop-filter: blur(24px);
+    transform: translateX(calc(100% + 35px));
     visibility: hidden;
     transition:
-        transform 280ms ease,
-        visibility 280ms;
+        transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
+        visibility 0.38s;
 }
 
 #photo-panel.panel-open {
@@ -196,83 +213,85 @@ button:focus-visible {
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 92px;
-    padding: 18px 22px;
-    border-bottom: 1px solid var(--border);
-    background: #fff;
+    padding: 25px 25px 18px;
 }
 
 .panel-subtitle {
     display: block;
-    margin-bottom: 6px;
-    color: var(--muted);
+    margin-bottom: 5px;
+    color: #8a9099;
     font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.13em;
+    letter-spacing: 0.16em;
 }
 
 #panel-city {
     margin: 0;
-    font-size: clamp(25px, 4vw, 32px);
+    color: #202630;
+    font-size: 28px;
     font-weight: 700;
-    letter-spacing: -0.045em;
-    line-height: 1.1;
+    letter-spacing: -0.055em;
 }
 
 #close-panel {
-    flex: 0 0 40px;
-    width: 40px;
-    height: 40px;
+    display: grid;
+    flex: 0 0 38px;
+    place-items: center;
+    width: 38px;
+    height: 38px;
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: #f1f1f3;
-    color: #1d1d1f;
-    font-size: 26px;
+    background: rgba(30, 40, 55, 0.07);
+    color: #4a515b;
+    font-size: 27px;
     line-height: 1;
     cursor: pointer;
+    transition: background 0.2s ease;
 }
 
-/* GALERÍA: cada foto tiene su propia celda */
+#close-panel:hover {
+    background: rgba(30, 40, 55, 0.13);
+}
+
+/* ==========================================
+   CUADRÍCULA DE FOTOS
+   ========================================== */
 
 #gallery {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     align-content: start;
     align-items: start;
-    gap: 10px;
-    width: 100%;
-    min-width: 0;
+    gap: 12px;
     flex: 1 1 auto;
-    padding: 14px;
+    min-height: 0;
+    padding: 0 22px 24px;
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+    scrollbar-width: thin;
+    scrollbar-color: #d0d4da transparent;
 }
 
 .gallery-photo,
 .gallery-add-button {
-    display: flex;
-    align-items: center;
-    justify-content: center;
     position: relative;
+    display: block;
     width: 100%;
     min-width: 0;
-    aspect-ratio: 9 / 16;
-    margin: 0;
+    aspect-ratio: 3 / 4;
     padding: 0;
     overflow: hidden;
-    border-radius: 8px;
+    border-radius: 12px;
+    cursor: pointer;
+    -webkit-appearance: none;
+    appearance: none;
 }
 
-/* Miniaturas verticales: recortan, no se deforman */
-
 .gallery-photo {
-    border: 1px solid #e5e5e7;
-    background: #f1f1f3;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
+    border: 1px solid rgba(35, 45, 60, 0.08);
+    background: #e9edf2;
 }
 
 .gallery-photo img {
@@ -283,38 +302,62 @@ button:focus-visible {
     object-position: center;
 }
 
-/* Botón para añadir fotos */
-
 .gallery-add-button {
-    border: 1px dashed #c5c5ca;
-    background: #f8f8fa;
-    color: #77777c;
-    font-size: 36px;
+    display: grid;
+    place-items: center;
+    gap: 5px;
+    border: 1.5px dashed #cbd1da;
+    background: rgba(245, 247, 250, 0.75);
+    color: #747d89;
+}
+
+.gallery-add-button .add-symbol {
+    font-size: 34px;
     font-weight: 300;
-    cursor: pointer;
-    appearance: none;
-    -webkit-appearance: none;
+    line-height: 1;
+}
+
+.gallery-add-button .add-label {
+    font-size: 11px;
+    font-weight: 600;
 }
 
 .gallery-add-button:hover {
-    border-color: var(--accent);
-    color: var(--accent);
+    border-color: #8da9df;
+    background: #f0f5ff;
+    color: #3769c4;
 }
 
-/* VISOR: muestra la foto completa */
+.gallery-empty {
+    grid-column: 1 / -1;
+    padding: 18px 4px;
+    color: #858c96;
+    font-size: 13px;
+    line-height: 1.5;
+}
+
+#add-photo-button {
+    display: none;
+}
+
+/* ==========================================
+   VISOR DE FOTO
+   ========================================== */
 
 #photo-viewer {
     position: fixed;
-    inset: 0;
     z-index: 1000;
+    inset: 0;
     display: none;
     align-items: center;
     justify-content: center;
-    padding: 60px 70px;
+    padding: 76px 82px;
     overflow: hidden;
-    background: rgba(0, 0, 0, 0.94);
+    background: rgba(20, 24, 31, 0.66);
+    -webkit-backdrop-filter: blur(12px);
+    backdrop-filter: blur(12px);
     opacity: 0;
-    transition: opacity 180ms ease;
+    transition: opacity 0.22s ease;
 }
 
 #photo-viewer.viewer-open {
@@ -329,7 +372,13 @@ button:focus-visible {
     max-width: 100%;
     max-height: 100%;
     object-fit: contain;
-    object-position: center;
+    border-radius: 8px;
+    box-shadow: 0 18px 70px rgba(0, 0, 0, 0.28);
+    transition: opacity 0.16s ease;
+}
+
+#viewer-image.photo-changing {
+    opacity: 0.35;
 }
 
 #close-viewer,
@@ -341,47 +390,57 @@ button:focus-visible {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.3);
-    border-radius: 999px;
-    background: rgba(35, 35, 35, 0.85);
-    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.28);
+    background: rgba(255, 255, 255, 0.94);
+    color: #252a32;
     cursor: pointer;
-    appearance: none;
     -webkit-appearance: none;
+    appearance: none;
+    transition:
+        background 0.18s ease,
+        transform 0.18s ease;
+}
+
+#close-viewer:hover,
+#previous-photo:hover,
+#next-photo:hover,
+#download-photo:hover {
+    background: #fff;
 }
 
 #close-viewer {
-    top: 14px;
-    right: 14px;
+    top: 20px;
+    right: 22px;
     width: 44px;
     height: 44px;
     padding: 0;
-    font-size: 28px;
+    border-radius: 50%;
+    font-size: 29px;
+    line-height: 1;
 }
 
 #previous-photo,
 #next-photo {
     top: 50%;
-    width: 44px;
-    height: 44px;
-    padding: 0;
+    width: 46px;
+    height: 46px;
+    padding: 11px;
+    border-radius: 50%;
     transform: translateY(-50%);
 }
 
 #previous-photo {
-    left: 14px;
+    left: 20px;
 }
 
 #next-photo {
-    right: 14px;
+    right: 20px;
 }
 
 #previous-photo svg,
-#next-photo svg,
-#download-photo svg {
-    display: block;
-    width: 23px;
-    height: 23px;
+#next-photo svg {
+    width: 100%;
+    height: 100%;
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -390,122 +449,142 @@ button:focus-visible {
 }
 
 #download-photo {
-    right: 14px;
-    bottom: 14px;
+    right: 22px;
+    bottom: 20px;
+    gap: 9px;
     min-height: 44px;
-    gap: 8px;
-    padding: 0 14px;
+    padding: 0 17px;
+    border-radius: 999px;
     font-size: 13px;
+    font-weight: 600;
+}
+
+#download-photo svg {
+    width: 18px;
+    height: 18px;
+    fill: none;
+    stroke: currentColor;
+    stroke-width: 1.7;
+    stroke-linecap: round;
+    stroke-linejoin: round;
 }
 
 #photo-counter {
     position: absolute;
-    bottom: 27px;
+    bottom: 32px;
     left: 50%;
+    transform: translateX(-50%);
     color: #fff;
     font-size: 13px;
     font-variant-numeric: tabular-nums;
-    transform: translateX(-50%);
 }
 
-/* MÓVIL */
+/* ==========================================
+   MÓVILES
+   ========================================== */
 
 @media (max-width: 700px) {
-    :root {
-        --header-height: 66px;
+    .main-header {
+        top: 16px;
+        left: 18px;
     }
 
-    .main-header {
-        padding: 0 18px;
+    .header-kicker {
+        font-size: 9px;
+    }
+
+    .main-header h1 {
+        font-size: 24px;
     }
 
     #photo-panel {
-        width: 100%;
-        border-left: 0;
+        top: auto;
+        right: 8px;
+        bottom: 8px;
+        left: 8px;
+        width: auto;
+        height: min(76dvh, 720px);
+        border-radius: 22px;
+        transform: translateY(calc(100% + 20px));
+    }
+
+    #photo-panel.panel-open {
+        transform: translateY(0);
     }
 
     .panel-header {
-        min-height: 82px;
-        padding: 14px 16px;
+        padding: 19px 18px 14px;
+    }
+
+    #panel-city {
+        font-size: 25px;
     }
 
     #gallery {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 7px;
-        padding: 10px;
+        gap: 9px;
+        padding: 0 14px 18px;
     }
 
     .gallery-photo,
     .gallery-add-button {
-        border-radius: 6px;
-    }
-
-    .city-button {
-        min-height: 32px;
-        padding: 7px 9px;
-        font-size: 11px;
+        border-radius: 9px;
     }
 
     #photo-viewer {
-        padding: 56px 44px;
+        padding: 68px 12px 78px;
+    }
+
+    #viewer-image {
+        max-width: 100%;
+        max-height: 100%;
+        border-radius: 7px;
+    }
+
+    #close-viewer {
+        top: 12px;
+        right: 12px;
     }
 
     #previous-photo,
     #next-photo {
-        width: 36px;
-        height: 36px;
+        width: 38px;
+        height: 38px;
+        padding: 9px;
     }
 
     #previous-photo {
-        left: 4px;
+        left: 8px;
     }
 
     #next-photo {
-        right: 4px;
-    }
-
-    #close-viewer {
-        top: 8px;
         right: 8px;
     }
 
     #download-photo {
-        right: 8px;
-        bottom: 8px;
-        min-height: 40px;
+        right: 12px;
+        bottom: 12px;
+        min-height: 42px;
+        padding: 0 14px;
     }
 
     #photo-counter {
-        bottom: 21px;
+        bottom: 27px;
+        font-size: 12px;
     }
 }
 
-/* Cuatro columnas en móviles con suficiente anchura */
-
-@media (min-width: 480px) and (max-width: 700px) {
+@media (max-width: 370px) {
     #gallery {
-        grid-template-columns: repeat(4, minmax(0, 1fr));
-    }
-}
-
-@media (max-width: 359px) {
-    #gallery {
-        gap: 5px;
-        padding: 7px;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 7px;
+        padding-right: 10px;
+        padding-left: 10px;
     }
 
-    #photo-viewer {
-        padding: 52px 38px;
-    }
-
-    #download-photo {
-        width: 40px;
-        min-width: 40px;
-        padding: 0;
-    }
-
-    #download-photo span {
-        display: none;
+    .panel-header {
+        padding-right: 14px;
+        padding-left: 14px;
     }
 }
 
@@ -513,8 +592,8 @@ button:focus-visible {
     *,
     *::before,
     *::after {
+        scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
     }
 }
