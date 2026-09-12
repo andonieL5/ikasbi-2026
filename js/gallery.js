@@ -1,14 +1,20 @@
 // ==========================================
+// IKASBI 2026 — GALERÍA DE FOTOS
+// ==========================================
+
+
+// ==========================================
 // ELEMENTOS DE LA INTERFAZ
 // ==========================================
 
 const gallery = document.getElementById("gallery");
+
 const photoViewer = document.getElementById("photo-viewer");
 const viewerImage = document.getElementById("viewer-image");
-const closeViewerButton = document.getElementById("close-viewer");
-const downloadButton = document.getElementById("download-photo");
-const previousButton = document.getElementById("previous-photo");
-const nextButton = document.getElementById("next-photo");
+const closeViewer = document.getElementById("close-viewer");
+const downloadPhoto = document.getElementById("download-photo");
+const previousPhoto = document.getElementById("previous-photo");
+const nextPhoto = document.getElementById("next-photo");
 const photoCounter = document.getElementById("photo-counter");
 
 
@@ -16,29 +22,49 @@ const photoCounter = document.getElementById("photo-counter");
 // FOTOS DE PRUEBA
 // ==========================================
 
-// Estas fotos son solo ejemplos.
-// Más adelante las sustituiremos por fotos guardadas en Firebase.
-
 const testPhotos = [
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?auto=format&fit=crop&w=1200&q=80",
-    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e?auto=format&fit=crop&w=1200&q=80"
+    "https://images.unsplash.com/photo-1500534623283-312aade485b7",
+    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+    "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e",
+    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+    "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+    "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+    "https://images.unsplash.com/photo-1500534623283-312aade485b7",
+    "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+    "https://images.unsplash.com/photo-1500534623283-312aade485b7",
+    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e"
 ];
 
 
 // ==========================================
-// FOTOS AÑADIDAS DESDE EL DISPOSITIVO
+// LISTA DE FOTOS
 // ==========================================
 
-// Se guardan temporalmente mientras la página está abierta.
-// Al recargarla, estas fotos desaparecerán.
-// Firebase permitirá guardarlas permanentemente más adelante.
+// Cada foto tendrá:
+// - url: dirección de la imagen
+// - downloadUrl: dirección para descargarla
+// - fileName: nombre del archivo
+// - objectUrl: indica si es una imagen local temporal
 
-const uploadedPhotosByCity = {};
+const photos = testPhotos.map((url, index) => ({
+    url: `${url}?auto=format&fit=crop&w=800&q=80`,
+    downloadUrl: `${url}?auto=format&fit=max&w=2400&q=95`,
+    fileName: `ikasbi-2026-foto-${index + 1}.jpg`,
+    objectUrl: false
+}));
 
 
 // ==========================================
-// SELECTOR DE ARCHIVOS
+// FOTO ACTUAL
+// ==========================================
+
+let currentPhotoIndex = 0;
+
+
+// ==========================================
+// CREAR BOTÓN PARA SUBIR FOTOS
 // ==========================================
 
 const fileInput = document.createElement("input");
@@ -47,194 +73,63 @@ fileInput.type = "file";
 fileInput.accept = "image/*";
 fileInput.multiple = true;
 fileInput.hidden = true;
-fileInput.setAttribute("aria-label", "Seleccionar fotos");
+
+fileInput.setAttribute(
+    "aria-label",
+    "Seleccionar fotografías"
+);
 
 document.body.appendChild(fileInput);
 
 
 // ==========================================
-// ESTADO DEL VISOR
+// MOSTRAR FOTO EN EL VISOR
 // ==========================================
 
-let currentCityName = null;
-let currentPhotoIndex = 0;
-let currentPhotos = [];
-
-
-// ==========================================
-// OBTENER FOTOS DE UNA CIUDAD
-// ==========================================
-
-function getPhotosForCity(cityName) {
-    const uploadedPhotos = uploadedPhotosByCity[cityName] || [];
-
-    return [
-        ...testPhotos,
-        ...uploadedPhotos
-    ];
-}
-
-
-// ==========================================
-// MOSTRAR GALERÍA DE UNA CIUDAD
-// ==========================================
-
-function renderCityGallery(cityName) {
-    if (!gallery) {
+function showPhoto(index) {
+    if (photos.length === 0) {
         return;
     }
 
-    currentCityName = cityName;
-    currentPhotos = getPhotosForCity(cityName);
-
-    gallery.innerHTML = "";
-
-    // --------------------------------------
-    // BOTÓN AÑADIR FOTOS
-    // --------------------------------------
-
-    const addButton = document.createElement("button");
-
-    addButton.type = "button";
-    addButton.className = "gallery-add-button";
-    addButton.textContent = "+";
-    addButton.setAttribute("aria-label", "Añadir fotos");
-
-    // Importante para móviles:
-    // abrir el selector directamente desde el toque del usuario.
-    addButton.addEventListener("click", () => {
-        fileInput.click();
-    });
-
-    gallery.appendChild(addButton);
-
-
-    // --------------------------------------
-    // MOSTRAR FOTOS
-    // --------------------------------------
-
-    currentPhotos.forEach((photoUrl, index) => {
-        const image = document.createElement("img");
-
-        image.src = photoUrl;
-        image.alt = `Foto ${index + 1} de ${cityName}`;
-        image.className = "gallery-photo";
-        image.loading = "lazy";
-
-        image.addEventListener("click", () => {
-            openPhoto(index);
-        });
-
-        gallery.appendChild(image);
-    });
-}
-
-
-// ==========================================
-// CUANDO SE SELECCIONAN ARCHIVOS
-// ==========================================
-
-fileInput.addEventListener("change", () => {
-    const selectedFiles = Array.from(fileInput.files || []);
-
-    if (!selectedFiles.length || !currentCityName) {
-        return;
+    // Volver al final si se retrocede desde la primera foto.
+    if (index < 0) {
+        index = photos.length - 1;
     }
 
-    if (!uploadedPhotosByCity[currentCityName]) {
-        uploadedPhotosByCity[currentCityName] = [];
-    }
-
-    selectedFiles.forEach(file => {
-        // Ignorar archivos que no sean imágenes.
-        if (!file.type.startsWith("image/")) {
-            return;
-        }
-
-        const imageUrl = URL.createObjectURL(file);
-
-        uploadedPhotosByCity[currentCityName].push(imageUrl);
-    });
-
-    renderCityGallery(currentCityName);
-
-    // Permite volver a seleccionar el mismo archivo.
-    fileInput.value = "";
-});
-
-
-// ==========================================
-// ABRIR VISOR DE FOTOS
-// ==========================================
-
-function openPhoto(index) {
-    currentPhotos = getPhotosForCity(currentCityName);
-
-    if (!currentPhotos.length) {
-        return;
+    // Volver al principio si se avanza desde la última foto.
+    if (index >= photos.length) {
+        index = 0;
     }
 
     currentPhotoIndex = index;
-    showPhoto();
 
-    if (photoViewer) {
-        photoViewer.classList.add("viewer-open");
-        photoViewer.setAttribute("aria-hidden", "false");
-    }
+    const photo = photos[currentPhotoIndex];
 
-    document.body.style.overflow = "hidden";
-}
+    viewerImage.classList.add("photo-changing");
 
+    setTimeout(() => {
+        viewerImage.src = photo.url;
 
-// ==========================================
-// MOSTRAR FOTO ACTUAL
-// ==========================================
-
-function showPhoto() {
-    if (!viewerImage || !currentPhotos.length) {
-        return;
-    }
-
-    viewerImage.src = currentPhotos[currentPhotoIndex];
-    viewerImage.alt = `Foto ${currentPhotoIndex + 1}`;
-
-    if (photoCounter) {
         photoCounter.textContent =
-            `${currentPhotoIndex + 1} / ${currentPhotos.length}`;
-    }
+            `${currentPhotoIndex + 1} / ${photos.length}`;
+
+        viewerImage.classList.remove("photo-changing");
+    }, 120);
 }
 
 
 // ==========================================
-// FOTO ANTERIOR
+// ABRIR VISOR
 // ==========================================
 
-function showPreviousPhoto() {
-    if (!currentPhotos.length) {
-        return;
-    }
+function openPhoto(index) {
+    showPhoto(index);
 
-    currentPhotoIndex =
-        (currentPhotoIndex - 1 + currentPhotos.length) %
-        currentPhotos.length;
+    photoViewer.style.display = "flex";
 
-    showPhoto();
-}
-
-
-// ==========================================
-// FOTO SIGUIENTE
-// ==========================================
-
-function showNextPhoto() {
-    if (!currentPhotos.length) {
-        return;
-    }
-
-    currentPhotoIndex =
-        (currentPhotoIndex + 1) % currentPhotos.length;
-
-    showPhoto();
+    requestAnimationFrame(() => {
+        photoViewer.classList.add("viewer-open");
+    });
 }
 
 
@@ -243,83 +138,205 @@ function showNextPhoto() {
 // ==========================================
 
 function closePhotoViewer() {
-    if (photoViewer) {
-        photoViewer.classList.remove("viewer-open");
-        photoViewer.setAttribute("aria-hidden", "true");
-    }
+    photoViewer.classList.remove("viewer-open");
 
-    if (viewerImage) {
-        viewerImage.removeAttribute("src");
-    }
-
-    // Restaurar el desplazamiento normal de la página.
-    document.body.style.overflow = "";
+    setTimeout(() => {
+        photoViewer.style.display = "none";
+        viewerImage.src = "";
+    }, 250);
 }
+
+
+// ==========================================
+// FOTO ANTERIOR
+// ==========================================
+
+function showPreviousPhoto() {
+    showPhoto(currentPhotoIndex - 1);
+}
+
+
+// ==========================================
+// FOTO SIGUIENTE
+// ==========================================
+
+function showNextPhoto() {
+    showPhoto(currentPhotoIndex + 1);
+}
+
+
+// ==========================================
+// AÑADIR FOTOS SELECCIONADAS
+// ==========================================
+
+function addSelectedPhotos(files) {
+    const imageFiles = Array.from(files).filter(file =>
+        file.type.startsWith("image/")
+    );
+
+    if (imageFiles.length === 0) {
+        return;
+    }
+
+    imageFiles.forEach(file => {
+        const localUrl = URL.createObjectURL(file);
+
+        photos.push({
+            url: localUrl,
+            downloadUrl: localUrl,
+            fileName: file.name,
+            objectUrl: true
+        });
+    });
+
+    renderGallery();
+}
+
+
+// ==========================================
+// CREAR GALERÍA
+// ==========================================
+
+function renderGallery() {
+    gallery.innerHTML = "";
+
+    // ---------- Botón + ----------
+
+    const addButton = document.createElement("button");
+
+    addButton.type = "button";
+    addButton.className = "gallery-add-button";
+    addButton.textContent = "+";
+
+    addButton.setAttribute(
+        "aria-label",
+        "Añadir fotografías"
+    );
+
+    addButton.title = "Añadir fotografías";
+
+    addButton.addEventListener("click", () => {
+        fileInput.click();
+    });
+
+    // El botón + aparece primero en la galería.
+    gallery.appendChild(addButton);
+
+
+    // ---------- Fotos ----------
+
+    photos.forEach((photo, index) => {
+        const photoElement = document.createElement("button");
+
+        photoElement.type = "button";
+        photoElement.className = "gallery-photo";
+
+        photoElement.setAttribute(
+            "aria-label",
+            `Abrir fotografía ${index + 1}`
+        );
+
+        const image = document.createElement("img");
+
+        image.src = photo.url;
+        image.alt = `Fotografía ${index + 1}`;
+        image.loading = "lazy";
+        image.draggable = false;
+
+        photoElement.appendChild(image);
+
+        photoElement.addEventListener("click", () => {
+            openPhoto(index);
+        });
+
+        gallery.appendChild(photoElement);
+    });
+}
+
+
+// ==========================================
+// SELECCIONAR ARCHIVOS
+// ==========================================
+
+fileInput.addEventListener("change", event => {
+    addSelectedPhotos(event.target.files);
+
+    // Permite volver a seleccionar el mismo archivo.
+    fileInput.value = "";
+});
+
+
+// ==========================================
+// CERRAR VISOR
+// ==========================================
+
+closeViewer.addEventListener(
+    "click",
+    closePhotoViewer
+);
+
+
+// ==========================================
+// FOTO ANTERIOR
+// ==========================================
+
+previousPhoto.addEventListener(
+    "click",
+    showPreviousPhoto
+);
+
+
+// ==========================================
+// FOTO SIGUIENTE
+// ==========================================
+
+nextPhoto.addEventListener(
+    "click",
+    showNextPhoto
+);
 
 
 // ==========================================
 // DESCARGAR FOTO
 // ==========================================
 
-function downloadCurrentPhoto() {
-    if (!currentPhotos.length) {
+downloadPhoto.addEventListener("click", () => {
+    if (photos.length === 0) {
         return;
     }
 
-    const photoUrl = currentPhotos[currentPhotoIndex];
+    const photo = photos[currentPhotoIndex];
 
-    const downloadLink = document.createElement("a");
+    const link = document.createElement("a");
 
-    downloadLink.href = photoUrl;
-    downloadLink.download = `foto-${currentPhotoIndex + 1}.jpg`;
-    downloadLink.target = "_blank";
-    downloadLink.rel = "noopener";
+    link.href = photo.downloadUrl;
+    link.download = photo.fileName;
+    link.target = "_blank";
+    link.rel = "noopener";
 
-    document.body.appendChild(downloadLink);
-    downloadLink.click();
-    downloadLink.remove();
-}
-
-
-// ==========================================
-// CONECTAR BOTONES DEL VISOR
-// ==========================================
-
-if (closeViewerButton) {
-    closeViewerButton.addEventListener(
-        "click",
-        closePhotoViewer
-    );
-}
-
-if (previousButton) {
-    previousButton.addEventListener(
-        "click",
-        showPreviousPhoto
-    );
-}
-
-if (nextButton) {
-    nextButton.addEventListener(
-        "click",
-        showNextPhoto
-    );
-}
-
-if (downloadButton) {
-    downloadButton.addEventListener(
-        "click",
-        downloadCurrentPhoto
-    );
-}
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+});
 
 
 // ==========================================
-// TECLAS DEL VISOR
+// CERRAR AL PULSAR FUERA DE LA FOTO
+// ==========================================
+
+photoViewer.addEventListener("click", event => {
+    if (event.target === photoViewer) {
+        closePhotoViewer();
+    }
+});
+
+
+// ==========================================
+// CONTROLES DE TECLADO
 // ==========================================
 
 document.addEventListener("keydown", event => {
-    if (!photoViewer || !photoViewer.classList.contains("viewer-open")) {
+    if (!photoViewer.classList.contains("viewer-open")) {
         return;
     }
 
@@ -338,20 +355,7 @@ document.addEventListener("keydown", event => {
 
 
 // ==========================================
-// CONEXIÓN CON app.js
-// ==========================================
-
-// app.js llama a esta función cuando se abre una ciudad.
-
-window.renderCityGallery = renderCityGallery;
-
-
-// ==========================================
 // INICIAR GALERÍA
 // ==========================================
 
-// Mostrar las fotos de la primera ciudad que se abra.
-// No abrimos ningún panel automáticamente.
-if (gallery) {
-    renderCityGallery("París");
-}
+renderGallery();
