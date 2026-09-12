@@ -1,20 +1,26 @@
 /* ==========================================
-   IKASBI 2026 — ESTILOS DE LA GALERÍA
+   IKASBI 2026 — GALERÍA Y VISOR
+   Archivo: css/style.css
    ========================================== */
 
-/* Evita que el padding provoque desbordamientos */
+/* Evita desbordamientos por padding y bordes */
 *,
 *::before,
 *::after {
     box-sizing: border-box;
 }
 
-/* La galería */
+/* ==========================================
+   GALERÍA
+   ========================================== */
+
 #gallery {
     display: grid;
     grid-template-columns: repeat(4, minmax(0, 1fr));
     gap: 14px;
+
     width: 100%;
+    min-width: 0;
     align-items: start;
 }
 
@@ -27,11 +33,10 @@
     width: 100%;
     min-width: 0;
     aspect-ratio: 3 / 4;
-
     padding: 0;
     overflow: hidden;
 
-    border: 1px solid rgba(128, 128, 128, 0.25);
+    border: 1px solid rgba(128, 128, 128, 0.28);
     border-radius: 10px;
     background: #171717;
 
@@ -40,11 +45,13 @@
     -webkit-appearance: none;
 }
 
-/* La imagen se ve entera, sin recortarse ni deformarse */
+/* La miniatura se muestra entera, sin recortarse */
 .gallery-photo img {
     display: block;
+
     width: 100%;
     height: 100%;
+    min-width: 0;
 
     object-fit: contain;
     object-position: center;
@@ -52,38 +59,55 @@
     background: #171717;
 }
 
-/* Efecto suave al pasar el ratón */
+/* Hover solo en dispositivos que lo admiten */
 @media (hover: hover) and (pointer: fine) {
     .gallery-photo:hover {
-        border-color: rgba(255, 255, 255, 0.65);
+        border-color: rgba(255, 255, 255, 0.7);
     }
 }
 
-/* Botón para añadir fotos */
+/* ==========================================
+   BOTÓN PARA AÑADIR FOTOS
+   ========================================== */
+
 .gallery-add-button {
     display: flex;
     align-items: center;
     justify-content: center;
 
     width: 100%;
-    aspect-ratio: 3 / 4;
     min-width: 0;
+    aspect-ratio: 3 / 4;
+    padding: 0;
 
-    border: 1px dashed rgba(128, 128, 128, 0.6);
+    border: 1px dashed rgba(128, 128, 128, 0.65);
     border-radius: 10px;
     background: transparent;
 
     color: inherit;
     font-size: 42px;
     font-weight: 300;
+    line-height: 1;
 
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
 }
 
+@media (hover: hover) and (pointer: fine) {
+    .gallery-add-button:hover {
+        background: rgba(128, 128, 128, 0.08);
+        border-color: rgba(128, 128, 128, 0.9);
+    }
+}
+
+/* Foco visible para teclado */
 .gallery-add-button:focus-visible,
-.gallery-photo:focus-visible {
+.gallery-photo:focus-visible,
+#close-viewer:focus-visible,
+#previous-photo:focus-visible,
+#next-photo:focus-visible,
+#download-photo:focus-visible {
     outline: 3px solid #8ab4f8;
     outline-offset: 3px;
 }
@@ -105,7 +129,7 @@
     height: 100%;
     height: 100dvh;
 
-    padding: 20px;
+    padding: 24px;
     overflow: auto;
 
     background: rgba(0, 0, 0, 0.94);
@@ -114,22 +138,22 @@
     transition: opacity 0.2s ease;
 }
 
-/* Se activa al abrir una foto */
+/* El JavaScript debe añadir esta clase al abrir el visor */
 #photo-viewer.viewer-open {
     display: flex;
     opacity: 1;
 }
 
-/* Imagen ampliada: se adapta a la ventana sin perder calidad */
+/* Imagen original dentro del visor */
 #viewer-image {
     display: block;
+
+    width: auto;
+    height: auto;
 
     max-width: 100%;
     max-height: 85vh;
     max-height: 85dvh;
-
-    width: auto;
-    height: auto;
 
     object-fit: contain;
     object-position: center;
@@ -137,12 +161,15 @@
     border-radius: 4px;
 }
 
-/* Animación ligera al cambiar de foto */
+/* Estado opcional mientras cambia la foto */
 #viewer-image.photo-changing {
     opacity: 0.35;
 }
 
-/* Botones del visor */
+/* ==========================================
+   BOTONES DEL VISOR
+   ========================================== */
+
 #close-viewer,
 #previous-photo,
 #next-photo,
@@ -151,11 +178,11 @@
     align-items: center;
     justify-content: center;
 
-    border: 1px solid rgba(255, 255, 255, 0.35);
+    border: 1px solid rgba(255, 255, 255, 0.4);
     border-radius: 999px;
 
-    background: rgba(30, 30, 30, 0.85);
-    color: white;
+    background: rgba(30, 30, 30, 0.9);
+    color: #fff;
 
     cursor: pointer;
     appearance: none;
@@ -170,6 +197,7 @@
 
     width: 44px;
     height: 44px;
+    padding: 0;
 
     font-size: 28px;
     line-height: 1;
@@ -184,8 +212,10 @@
 
     width: 44px;
     height: 44px;
+    padding: 0;
 
     font-size: 28px;
+    line-height: 1;
 }
 
 #previous-photo {
@@ -196,14 +226,17 @@
     right: 16px;
 }
 
-/* Contador */
+/* Contador de fotos */
 #photo-counter {
     position: absolute;
     bottom: 20px;
     left: 50%;
     transform: translateX(-50%);
 
-    color: white;
+    max-width: calc(100% - 150px);
+    overflow-wrap: anywhere;
+
+    color: #fff;
     font-size: 14px;
     text-align: center;
 }
@@ -221,8 +254,18 @@
     font-size: 14px;
 }
 
+/* Hover solo con ratón */
+@media (hover: hover) and (pointer: fine) {
+    #close-viewer:hover,
+    #previous-photo:hover,
+    #next-photo:hover,
+    #download-photo:hover {
+        background: rgba(70, 70, 70, 0.95);
+    }
+}
+
 /* ==========================================
-   MÓVILES
+   MÓVILES Y PANTALLAS ESTRECHAS
    ========================================== */
 
 @media (max-width: 600px) {
@@ -247,6 +290,11 @@
         max-height: 78dvh;
     }
 
+    #close-viewer {
+        top: 8px;
+        right: 8px;
+    }
+
     #previous-photo {
         left: 8px;
     }
@@ -262,18 +310,24 @@
         font-size: 24px;
     }
 
-    #close-viewer {
-        top: 8px;
-        right: 8px;
-    }
-
     #download-photo {
         right: 8px;
         bottom: 8px;
+        min-height: 40px;
+        padding: 0 12px;
+    }
+
+    #photo-counter {
+        bottom: 18px;
+        max-width: calc(100% - 130px);
+        font-size: 13px;
     }
 }
 
-/* Reduce animaciones si el móvil lo tiene configurado así */
+/* ==========================================
+   ACCESIBILIDAD: REDUCIR ANIMACIONES
+   ========================================== */
+
 @media (prefers-reduced-motion: reduce) {
     #photo-viewer,
     #viewer-image {
