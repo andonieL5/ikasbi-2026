@@ -1,653 +1,231 @@
 /* ==========================================
-   IKASBI 2026 — CSS completo
-   Estética clara, limpia y elegante
-========================================== */
+   IKASBI 2026 — ESTILOS DE LA GALERÍA
+   ========================================== */
 
-/* ---------- Base ---------- */
-
-* {
+/* Evita que el padding provoque desbordamientos */
+*,
+*::before,
+*::after {
     box-sizing: border-box;
-    margin: 0;
-    padding: 0;
 }
 
-html,
-body {
+/* La galería */
+#gallery {
+    display: grid;
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+    gap: 14px;
     width: 100%;
-    height: 100%;
+    align-items: start;
 }
 
-body {
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
-    overflow: hidden;
-    background: #dfe8ee;
-    color: #17191c;
-    -webkit-font-smoothing: antialiased;
-}
-
-button {
-    font: inherit;
-    -webkit-tap-highlight-color: transparent;
-}
-
-button:focus-visible {
-    outline: 3px solid #668bc5;
-    outline-offset: 3px;
-}
-
-#app {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-}
-
-/* ---------- Mapa ---------- */
-
-#map-container {
-    position: absolute;
-    inset: 0;
-    width: 100%;
-    height: 100%;
-}
-
-#map {
-    position: relative;
-    width: 100%;
-    height: 100%;
-    overflow: hidden;
-    background:
-        radial-gradient(ellipse at 50% 45%, #edf2f4 0%, transparent 65%),
-        linear-gradient(135deg, #dfe9ef 0%, #d8e4eb 50%, #dce7ed 100%);
-}
-
-#map svg {
-    position: absolute;
-    inset: 0;
-    display: block;
-    width: 100%;
-    height: 100%;
-}
-
-/* Países dibujados por D3 */
-
-.country {
-    fill: rgba(250, 249, 245, 0.96);
-    stroke: rgba(145, 158, 166, 0.52);
-    stroke-width: 0.7px;
-    vector-effect: non-scaling-stroke;
-    transition: fill 0.25s ease;
-}
-
-/* Ruta */
-
-.travel-route {
-    fill: none;
-    stroke: #ffffff;
-    stroke-width: 4px;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-    filter: drop-shadow(0 2px 4px rgba(35, 48, 58, 0.2));
-    vector-effect: non-scaling-stroke;
-}
-
-/* Puntos de ciudades */
-
-.city-point {
-    fill: #ffffff;
-    stroke: #29343b;
-    stroke-width: 2px;
-    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.2));
-    vector-effect: non-scaling-stroke;
-}
-
-/* ---------- Título ---------- */
-
-.main-header {
-    position: absolute;
-    top: 34px;
-    left: 42px;
-    z-index: 30;
-    color: #172027;
-    pointer-events: none;
-}
-
-.main-header h1 {
-    font-size: clamp(32px, 4vw, 52px);
-    font-weight: 750;
-    letter-spacing: -1.8px;
-    line-height: 1;
-}
-
-.main-header p {
-    margin-top: 9px;
-    font-size: 14px;
-    color: rgba(23, 32, 39, 0.65);
-}
-
-/* ---------- Botones de ciudades ---------- */
-
-.city-button {
-    position: absolute;
-    z-index: 20;
-    transform: translate(-50%, -50%);
-    opacity: 0;
-
-    min-height: 36px;
-    padding: 9px 15px;
-
-    border: 1px solid rgba(255, 255, 255, 0.85);
-    border-radius: 999px;
-
-    background: rgba(255, 255, 255, 0.82);
-    color: #20262b;
-
-    font-size: 13px;
-    font-weight: 650;
-    letter-spacing: -0.15px;
-    white-space: nowrap;
-
-    cursor: pointer;
-
-    box-shadow:
-        0 5px 18px rgba(35, 48, 58, 0.12),
-        inset 0 1px 0 rgba(255, 255, 255, 0.95);
-
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    transition:
-        opacity 0.45s ease,
-        transform 0.22s ease,
-        background 0.22s ease,
-        box-shadow 0.22s ease;
-}
-
-.city-button.city-visible {
-    opacity: 1;
-}
-
-.city-button:hover {
-    transform: translate(-50%, -50%) scale(1.055);
-    background: #ffffff;
-    box-shadow: 0 9px 24px rgba(35, 48, 58, 0.17);
-}
-
-.city-button:active {
-    transform: translate(-50%, -50%) scale(0.97);
-}
-
-/* ---------- Panel de fotos ---------- */
-
-#photo-panel {
-    position: absolute;
-    top: 20px;
-    right: 20px;
-    bottom: 20px;
-    z-index: 100;
-
+/* Cada foto ocupa su propia celda */
+.gallery-photo {
     display: flex;
-    flex-direction: column;
-
-    width: min(620px, calc(100vw - 40px));
-    padding: 28px;
-
-    border: 1px solid rgba(255, 255, 255, 0.8);
-    border-radius: 28px;
-
-    background: rgba(250, 251, 252, 0.94);
-    color: #17191c;
-
-    box-shadow: 0 22px 65px rgba(28, 42, 52, 0.2);
-
-    transform: translateX(calc(100% + 40px));
-    opacity: 0;
-    pointer-events: none;
-
-    transition:
-        transform 0.5s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.35s ease;
-}
-
-#photo-panel.panel-open {
-    transform: translateX(0);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-/* Cabecera del panel */
-
-.panel-header {
-    display: flex;
-    align-items: flex-start;
-    justify-content: space-between;
-    gap: 18px;
-    margin-bottom: 22px;
-}
-
-.panel-subtitle {
-    display: block;
-    margin-bottom: 7px;
-    color: #818991;
-    font-size: 10px;
-    font-weight: 750;
-    letter-spacing: 1.8px;
-}
-
-#panel-city {
-    color: #17191c;
-    font-size: clamp(28px, 3vw, 38px);
-    font-weight: 720;
-    letter-spacing: -1.5px;
-    line-height: 1.1;
-}
-
-/* Cerrar panel */
-
-#close-panel {
-    display: flex;
-    flex: 0 0 auto;
     align-items: center;
     justify-content: center;
 
-    width: 38px;
-    height: 38px;
-
-    border: 1px solid #e0e4e7;
-    border-radius: 50%;
-
-    background: #f0f2f4;
-    color: #4c535a;
-
-    font-size: 25px;
-    font-weight: 300;
-    line-height: 1;
-
-    cursor: pointer;
-    transition: background 0.2s ease, transform 0.2s ease;
-}
-
-#close-panel:hover {
-    background: #e4e8eb;
-    transform: rotate(5deg);
-}
-
-/* ---------- Galería ---------- */
-
-#gallery {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-
-    display: grid;
-    grid-template-columns: repeat(4, minmax(0, 1fr));
-    align-content: start;
-    gap: 13px;
-
-    padding: 4px 5px 20px 2px;
-}
-
-/* Fotos */
-
-.gallery-photo {
-    display: block;
     width: 100%;
+    min-width: 0;
     aspect-ratio: 3 / 4;
-    object-fit: cover;
+
+    padding: 0;
     overflow: hidden;
 
-    border: 1px solid rgba(28, 42, 52, 0.06);
-    border-radius: 15px;
-    background: #e7ebee;
+    border: 1px solid rgba(128, 128, 128, 0.25);
+    border-radius: 10px;
+    background: #171717;
 
     cursor: pointer;
-    box-shadow: 0 3px 12px rgba(25, 39, 49, 0.09);
-
-    transition: transform 0.22s ease, box-shadow 0.22s ease;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
-.gallery-photo:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 8px 20px rgba(25, 39, 49, 0.15);
-}
+/* La imagen se ve entera, sin recortarse ni deformarse */
 .gallery-photo img {
     display: block;
     width: 100%;
     height: 100%;
-    object-fit: cover;
-    transition: transform 0.35s ease;
+
+    object-fit: contain;
+    object-position: center;
+
+    background: #171717;
 }
 
-.gallery-photo:hover img {
-    transform: scale(1.045);
+/* Efecto suave al pasar el ratón */
+@media (hover: hover) and (pointer: fine) {
+    .gallery-photo:hover {
+        border-color: rgba(255, 255, 255, 0.65);
+    }
 }
 
-/* Botón + creado por gallery.js */
-
+/* Botón para añadir fotos */
 .gallery-add-button {
     display: flex;
     align-items: center;
     justify-content: center;
 
     width: 100%;
-    aspect-ratio: 1 / 1;
-    padding: 0;
+    aspect-ratio: 3 / 4;
+    min-width: 0;
 
-    border: 1.5px dashed #c4ccd2;
-    border-radius: 15px;
+    border: 1px dashed rgba(128, 128, 128, 0.6);
+    border-radius: 10px;
+    background: transparent;
 
-    background: rgba(255, 255, 255, 0.55);
-    color: #7b858d;
-
-    font-size: 34px;
+    color: inherit;
+    font-size: 42px;
     font-weight: 300;
-    line-height: 1;
 
     cursor: pointer;
-    transition:
-        background 0.2s ease,
-        border-color 0.2s ease,
-        color 0.2s ease,
-        transform 0.2s ease;
+    appearance: none;
+    -webkit-appearance: none;
 }
 
-.gallery-add-button:hover {
-    transform: scale(1.025);
-    border-color: #9caab4;
-    background: #ffffff;
-    color: #343d44;
+.gallery-add-button:focus-visible,
+.gallery-photo:focus-visible {
+    outline: 3px solid #8ab4f8;
+    outline-offset: 3px;
 }
 
-/* El botón + original del HTML permanece oculto */
-
-#add-photo-button {
-    display: none;
-}
-
-/* Barra de desplazamiento de la galería */
-
-#gallery {
-    scrollbar-width: thin;
-    scrollbar-color: #cbd2d7 transparent;
-}
-
-#gallery::-webkit-scrollbar {
-    width: 5px;
-}
-
-#gallery::-webkit-scrollbar-track {
-    background: transparent;
-}
-
-#gallery::-webkit-scrollbar-thumb {
-    border-radius: 999px;
-    background: #cbd2d7;
-}
-
-/* ---------- Visor de fotos ---------- */
+/* ==========================================
+   VISOR DE FOTOS
+   ========================================== */
 
 #photo-viewer {
-    position: absolute;
-    inset: 0;
-    z-index: 200;
-
     display: none;
     align-items: center;
     justify-content: center;
 
-    background: rgba(12, 16, 20, 0.88);
+    position: fixed;
+    inset: 0;
+    z-index: 9999;
 
+    width: 100%;
+    height: 100%;
+    height: 100dvh;
+
+    padding: 20px;
+    overflow: auto;
+
+    background: rgba(0, 0, 0, 0.94);
     opacity: 0;
-    transition: opacity 0.25s ease;
+
+    transition: opacity 0.2s ease;
 }
 
+/* Se activa al abrir una foto */
 #photo-viewer.viewer-open {
     display: flex;
     opacity: 1;
 }
 
+/* Imagen ampliada: se adapta a la ventana sin perder calidad */
 #viewer-image {
     display: block;
-    max-width: 90vw;
-    max-height: 90vh;
+
+    max-width: 100%;
+    max-height: 85vh;
+    max-height: 85dvh;
+
+    width: auto;
+    height: auto;
+
     object-fit: contain;
+    object-position: center;
 
-    border-radius: 8px;
-    box-shadow: 0 22px 70px rgba(0, 0, 0, 0.32);
-
-    transform: scale(0.97);
-    opacity: 0;
-
-    transition:
-        transform 0.35s cubic-bezier(0.22, 1, 0.36, 1),
-        opacity 0.25s ease;
+    border-radius: 4px;
 }
 
-#photo-viewer.viewer-open #viewer-image {
-    transform: scale(1);
-    opacity: 1;
-}
-
+/* Animación ligera al cambiar de foto */
 #viewer-image.photo-changing {
-    transform: scale(0.97);
-    opacity: 0;
+    opacity: 0.35;
 }
 
-/* ---------- Botón cerrar visor ---------- */
-
-#close-viewer {
-    position: absolute;
-    top: 24px;
-    right: 24px;
-    z-index: 10;
-
+/* Botones del visor */
+#close-viewer,
+#previous-photo,
+#next-photo,
+#download-photo {
     display: flex;
     align-items: center;
     justify-content: center;
+
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 999px;
+
+    background: rgba(30, 30, 30, 0.85);
+    color: white;
+
+    cursor: pointer;
+    appearance: none;
+    -webkit-appearance: none;
+}
+
+/* Cerrar */
+#close-viewer {
+    position: absolute;
+    top: 16px;
+    right: 16px;
 
     width: 44px;
     height: 44px;
-    padding: 0;
 
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 50%;
-
-    background: rgba(255, 255, 255, 0.13);
-    color: #ffffff;
-
-    font-size: 27px;
-    font-weight: 300;
+    font-size: 28px;
     line-height: 1;
-
-    cursor: pointer;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
 }
 
-#close-viewer:hover {
-    transform: scale(1.06);
-    background: rgba(255, 255, 255, 0.23);
-}
-
-/* ---------- Descargar ---------- */
-
-#download-photo {
-    position: absolute;
-    top: 24px;
-    right: 80px;
-    z-index: 10;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 9px;
-
-    min-height: 44px;
-    padding: 0 15px;
-
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 999px;
-
-    background: rgba(255, 255, 255, 0.13);
-    color: #ffffff;
-
-    font-size: 12px;
-    font-weight: 600;
-
-    cursor: pointer;
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
-
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
-}
-
-#download-photo svg {
-    display: block;
-    width: 17px;
-    height: 17px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.7;
-    stroke-linecap: round;
-    stroke-linejoin: round;
-}
-
-#download-photo span {
-    display: inline;
-    font-size: 12px;
-    font-weight: 600;
-}
-
-#download-photo:hover {
-    transform: translateY(-1px);
-    background: rgba(255, 255, 255, 0.23);
-}
-
-/* ---------- Flechas del visor ---------- */
-
-.viewer-arrow {
+/* Anterior y siguiente */
+#previous-photo,
+#next-photo {
     position: absolute;
     top: 50%;
-    z-index: 10;
-
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    width: 48px;
-    height: 48px;
-    padding: 0;
-
-    border: 1px solid rgba(255, 255, 255, 0.25);
-    border-radius: 50%;
-
-    background: rgba(255, 255, 255, 0.12);
-    color: #ffffff;
-
-    cursor: pointer;
     transform: translateY(-50%);
 
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    width: 44px;
+    height: 44px;
 
-    transition:
-        transform 0.2s ease,
-        background 0.2s ease;
+    font-size: 28px;
 }
 
-.viewer-arrow svg {
-    display: block;
-    width: 22px;
-    height: 22px;
-    fill: none;
-    stroke: currentColor;
-    stroke-width: 1.8;
-    stroke-linecap: round;
-    stroke-linejoin: round;
+#previous-photo {
+    left: 16px;
 }
 
-.viewer-arrow:hover {
-    background: rgba(255, 255, 255, 0.23);
+#next-photo {
+    right: 16px;
 }
 
-.viewer-arrow-left {
-    left: 24px;
-}
-
-.viewer-arrow-right {
-    right: 24px;
-}
-
-.viewer-arrow-left:hover {
-    transform: translateY(-50%) scale(1.06);
-}
-
-.viewer-arrow-right:hover {
-    transform: translateY(-50%) scale(1.06);
-}
-
-/* ---------- Contador ---------- */
-
+/* Contador */
 #photo-counter {
     position: absolute;
-    bottom: 25px;
+    bottom: 20px;
     left: 50%;
-    z-index: 10;
-
-    padding: 7px 13px;
-    border: 1px solid rgba(255, 255, 255, 0.2);
-    border-radius: 999px;
-
-    background: rgba(0, 0, 0, 0.22);
-    color: rgba(255, 255, 255, 0.9);
-
-    font-size: 12px;
-    font-weight: 600;
-    font-variant-numeric: tabular-nums;
-    letter-spacing: 0.4px;
-
     transform: translateX(-50%);
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
+
+    color: white;
+    font-size: 14px;
+    text-align: center;
 }
 
-/* ---------- Móvil y tablet ---------- */
+/* Descargar */
+#download-photo {
+    position: absolute;
+    right: 16px;
+    bottom: 16px;
 
-@media (max-width: 700px) {
-    .main-header {
-        top: 22px;
-        left: 20px;
-    }
+    min-width: 44px;
+    min-height: 44px;
+    padding: 0 16px;
 
-    .main-header h1 {
-        font-size: 34px;
-    }
+    font-size: 14px;
+}
 
-    .city-button {
-        min-height: 32px;
-        padding: 8px 11px;
-        font-size: 11px;
-    }
+/* ==========================================
+   MÓVILES
+   ========================================== */
 
-    #photo-panel {
-        top: 10px;
-        right: 10px;
-        bottom: 10px;
-        width: calc(100vw - 20px);
-        padding: 20px;
-        border-radius: 23px;
-    }
-
-    #panel-city {
-        font-size: 32px;
-    }
-
+@media (max-width: 600px) {
     #gallery {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 10px;
@@ -655,90 +233,50 @@ button:focus-visible {
 
     .gallery-photo,
     .gallery-add-button {
-        border-radius: 14px;
+        aspect-ratio: 3 / 4;
+        border-radius: 8px;
     }
 
-    #close-viewer {
-        top: 14px;
-        right: 14px;
-        width: 40px;
-        height: 40px;
-    }
-
-    #download-photo {
-        top: 14px;
-        right: 64px;
-        min-height: 40px;
-        padding: 0 12px;
-    }
-
-    .viewer-arrow {
-        top: auto;
-        bottom: 16px;
-        width: 42px;
-        height: 42px;
-        transform: none;
-    }
-
-    .viewer-arrow-left {
-        left: 14px;
-    }
-
-    .viewer-arrow-right {
-        right: 14px;
-    }
-
-    .viewer-arrow-left:hover,
-    .viewer-arrow-right:hover {
-        transform: scale(1.04);
-    }
-
-    #photo-counter {
-        bottom: 28px;
-        font-size: 11px;
+    #photo-viewer {
+        padding: 10px;
     }
 
     #viewer-image {
-        max-width: 94vw;
-        max-height: 80vh;
-        border-radius: 5px;
-    }
-}
-
-/* Móviles muy estrechos */
-
-@media (max-width: 380px) {
-    #photo-panel {
-        padding: 16px;
+        max-width: 100%;
+        max-height: 78vh;
+        max-height: 78dvh;
     }
 
-    #panel-city {
-        font-size: 28px;
+    #previous-photo {
+        left: 8px;
     }
 
-    #gallery {
-        gap: 8px;
+    #next-photo {
+        right: 8px;
+    }
+
+    #previous-photo,
+    #next-photo {
+        width: 38px;
+        height: 38px;
+        font-size: 24px;
+    }
+
+    #close-viewer {
+        top: 8px;
+        right: 8px;
     }
 
     #download-photo {
-        right: 60px;
-        padding: 0 10px;
-    }
-
-    #download-photo span {
-        font-size: 11px;
+        right: 8px;
+        bottom: 8px;
     }
 }
 
-/* Accesibilidad: reducir movimiento */
-
+/* Reduce animaciones si el móvil lo tiene configurado así */
 @media (prefers-reduced-motion: reduce) {
-    *,
-    *::before,
-    *::after {
-        scroll-behavior: auto !important;
-        transition-duration: 0.01ms !important;
-        animation-duration: 0.01ms !important;
-        animation-iteration-count: 1 !important;
+    #photo-viewer,
+    #viewer-image {
+        transition: none;
     }
 }
