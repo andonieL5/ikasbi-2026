@@ -1,18 +1,15 @@
 /* =========================================================
-   IKASBI 2026 — ESTILO CLARO, LIMPIO Y ELEGANTE
+   IKASBI 2026 — ESTILO CLARO, MAPA A PANTALLA COMPLETA
    ========================================================= */
 
 :root {
     color-scheme: light;
-    --page-bg: #f5f5f7;
-    --surface: #ffffff;
-    --surface-soft: #f0f0f2;
+    --page-bg: #ffffff;
     --text: #1d1d1f;
-    --muted: #6e6e73;
-    --border: rgba(0, 0, 0, 0.1);
+    --muted: #77777c;
+    --border: #e5e5e7;
     --accent: #0071e3;
-    --accent-hover: #0077ed;
-    --panel-width: 620px;
+    --header-height: 76px;
 }
 
 *,
@@ -21,29 +18,24 @@
     box-sizing: border-box;
 }
 
-html {
-    min-width: 320px;
-    min-height: 100%;
-    background: var(--page-bg);
-    scroll-behavior: smooth;
-}
-
+html,
 body {
+    width: 100%;
     min-width: 320px;
     min-height: 100%;
     margin: 0;
     background: var(--page-bg);
     color: var(--text);
-    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
     -webkit-font-smoothing: antialiased;
 }
 
-button,
-input {
-    font: inherit;
+body {
+    overflow: hidden;
 }
 
 button {
+    font: inherit;
     -webkit-tap-highlight-color: transparent;
 }
 
@@ -53,124 +45,144 @@ button:focus-visible {
 }
 
 #app {
-    min-height: 100%;
+    width: 100%;
+    min-height: 100vh;
+    min-height: 100dvh;
 }
 
-/* =========================================================
-   CABECERA
-   ========================================================= */
+/* CABECERA */
 
 .main-header {
     position: relative;
-    z-index: 2;
+    z-index: 5;
     display: flex;
     align-items: center;
-    min-height: 92px;
-    padding: 22px clamp(18px, 4vw, 56px);
-    background: rgba(255, 255, 255, 0.86);
-    border-bottom: 1px solid var(--border);
+    height: var(--header-height);
+    padding: 0 clamp(20px, 4vw, 56px);
+    border-bottom: 1px solid #ededed;
+    background: #fff;
 }
 
 .main-header h1 {
     margin: 0;
-    color: var(--text);
-    font-size: clamp(28px, 4vw, 42px);
+    font-size: clamp(27px, 3vw, 38px);
     font-weight: 700;
-    letter-spacing: -0.045em;
+    letter-spacing: -0.055em;
 }
 
-/* =========================================================
-   MAPA
-   ========================================================= */
+/* MAPA: ocupa todo el espacio restante */
 
 #map-container {
     position: relative;
     width: 100%;
-    min-height: 440px;
-    padding: 22px clamp(12px, 3vw, 36px) 30px;
+    height: calc(100vh - var(--header-height));
+    height: calc(100dvh - var(--header-height));
+    min-height: 260px;
+    padding: 0;
     overflow: hidden;
+    background: #fff;
 }
 
 #map {
     position: relative;
     width: 100%;
-    min-height: 390px;
+    height: 100%;
     overflow: hidden;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    border-radius: 20px;
-    background:
-        radial-gradient(ellipse at 50% 45%, rgba(255, 255, 255, 0.95), transparent 70%),
-        #e9edf0;
+    background: #fff;
 }
 
-/* El mapa.js puede dibujar la ruta dentro de este elemento */
-#route {
+#map svg {
     position: absolute;
     inset: 0;
-    pointer-events: none;
+    display: block;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
 }
 
-/* Botones de ciudades */
+.countries .country {
+    fill: #f2f3f4;
+    stroke: #cfd2d5;
+    stroke-width: 0.7;
+    vector-effect: non-scaling-stroke;
+}
+
+.travel-route {
+    fill: none;
+    stroke: #0071e3;
+    stroke-width: 2.5;
+    stroke-linecap: round;
+    stroke-linejoin: round;
+    vector-effect: non-scaling-stroke;
+}
+
+.city-point {
+    fill: #0071e3;
+    stroke: #fff;
+    stroke-width: 2.5;
+    vector-effect: non-scaling-stroke;
+}
+
+/* Los botones se colocan mediante map.js */
+
 .city-button {
     position: absolute;
     z-index: 2;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    max-width: calc(100% - 16px);
-    min-height: 38px;
-    padding: 8px 14px;
-    border: 1px solid rgba(0, 0, 0, 0.08);
+    display: block;
+    max-width: min(190px, 45vw);
+    min-height: 36px;
+    padding: 8px 13px;
+    border: 1px solid #dedee2;
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.96);
-    color: var(--text);
-    font-size: 13px;
+    background: rgba(255, 255, 255, 0.97);
+    color: #1d1d1f;
+    font-size: 12px;
     font-weight: 600;
-    line-height: 1.2;
+    line-height: 1.15;
     white-space: nowrap;
     cursor: pointer;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 9px rgba(0, 0, 0, 0.08);
+    opacity: 0;
+    transform: translate(-50%, -50%);
     transition:
+        opacity 180ms ease,
         background-color 150ms ease,
         color 150ms ease,
-        box-shadow 150ms ease,
-        transform 150ms ease;
+        border-color 150ms ease;
 }
 
-.city-button:hover {
-    background: var(--accent);
-    color: #ffffff;
-    box-shadow: 0 4px 12px rgba(0, 113, 227, 0.2);
+.city-button.city-visible {
+    opacity: 1;
 }
 
+.city-button:hover,
 .city-button:active {
-    transform: scale(0.97);
+    border-color: var(--accent);
+    background: var(--accent);
+    color: #fff;
 }
 
-/* =========================================================
-   PANEL LATERAL DE FOTOS
-   ========================================================= */
+/* PANEL DE CIUDAD */
 
 #photo-panel {
     position: fixed;
-    z-index: 100;
+    z-index: 20;
     top: 0;
     right: 0;
     bottom: 0;
     display: flex;
     flex-direction: column;
-    width: min(var(--panel-width), 100%);
+    width: min(620px, 100%);
     max-width: 100%;
-    padding: 0;
     overflow: hidden;
     border-left: 1px solid var(--border);
-    background: var(--surface);
+    background: #fff;
     box-shadow: -12px 0 40px rgba(0, 0, 0, 0.12);
-    transform: translateX(105%);
+    transform: translateX(102%);
     visibility: hidden;
     transition:
-        transform 300ms cubic-bezier(0.2, 0.75, 0.25, 1),
-        visibility 300ms;
+        transform 280ms ease,
+        visibility 280ms;
 }
 
 #photo-panel.panel-open {
@@ -179,61 +191,49 @@ button:focus-visible {
 }
 
 .panel-header {
-    position: relative;
-    z-index: 2;
     display: flex;
     flex: 0 0 auto;
     align-items: center;
     justify-content: space-between;
     gap: 16px;
-    min-height: 100px;
-    padding: 20px 24px;
+    min-height: 92px;
+    padding: 18px 22px;
     border-bottom: 1px solid var(--border);
-    background: var(--surface);
+    background: #fff;
 }
 
 .panel-subtitle {
     display: block;
-    margin-bottom: 7px;
+    margin-bottom: 6px;
     color: var(--muted);
-    font-size: 11px;
+    font-size: 10px;
     font-weight: 700;
-    letter-spacing: 0.12em;
+    letter-spacing: 0.13em;
 }
 
 #panel-city {
     margin: 0;
-    color: var(--text);
-    font-size: clamp(26px, 4vw, 34px);
+    font-size: clamp(25px, 4vw, 32px);
     font-weight: 700;
-    letter-spacing: -0.04em;
+    letter-spacing: -0.045em;
     line-height: 1.1;
 }
 
 #close-panel {
-    display: inline-flex;
-    flex: 0 0 42px;
-    align-items: center;
-    justify-content: center;
-    width: 42px;
-    height: 42px;
+    flex: 0 0 40px;
+    width: 40px;
+    height: 40px;
     padding: 0;
     border: 0;
     border-radius: 50%;
-    background: var(--surface-soft);
-    color: var(--text);
-    font-size: 27px;
+    background: #f1f1f3;
+    color: #1d1d1f;
+    font-size: 26px;
     line-height: 1;
     cursor: pointer;
 }
 
-#close-panel:hover {
-    background: #e5e5ea;
-}
-
-/* =========================================================
-   GALERÍA DE MINIATURAS
-   ========================================================= */
+/* GALERÍA: cada foto tiene su propia celda */
 
 #gallery {
     display: grid;
@@ -243,29 +243,33 @@ button:focus-visible {
     gap: 10px;
     width: 100%;
     min-width: 0;
-    padding: 16px;
+    flex: 1 1 auto;
+    padding: 14px;
     overflow-x: hidden;
     overflow-y: auto;
+    overscroll-behavior: contain;
 }
 
-/* Una tarjeta independiente por foto */
 .gallery-photo,
 .gallery-add-button {
     display: flex;
     align-items: center;
     justify-content: center;
+    position: relative;
     width: 100%;
     min-width: 0;
     aspect-ratio: 9 / 16;
+    margin: 0;
     padding: 0;
     overflow: hidden;
-    border-radius: 9px;
+    border-radius: 8px;
 }
 
-/* Miniatura: recorta la imagen, pero no la deforma */
+/* Miniaturas verticales: recortan, no se deforman */
+
 .gallery-photo {
-    border: 1px solid rgba(0, 0, 0, 0.08);
-    background: #e9e9eb;
+    border: 1px solid #e5e5e7;
+    background: #f1f1f3;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
@@ -279,12 +283,13 @@ button:focus-visible {
     object-position: center;
 }
 
-/* Botón + creado por gallery.js */
+/* Botón para añadir fotos */
+
 .gallery-add-button {
-    border: 1px dashed #b8b8bd;
-    background: #f5f5f7;
-    color: #6e6e73;
-    font-size: 38px;
+    border: 1px dashed #c5c5ca;
+    background: #f8f8fa;
+    color: #77777c;
+    font-size: 36px;
     font-weight: 300;
     cursor: pointer;
     appearance: none;
@@ -293,43 +298,19 @@ button:focus-visible {
 
 .gallery-add-button:hover {
     border-color: var(--accent);
-    background: #eef6ff;
     color: var(--accent);
 }
 
-/* gallery.js ya crea un botón + dentro de la cuadrícula */
-#add-photo-button {
-    display: none !important;
-}
-
-@media (hover: hover) and (pointer: fine) {
-    .gallery-photo:hover {
-        border-color: rgba(0, 113, 227, 0.55);
-    }
-
-    .gallery-photo img {
-        transition: transform 180ms ease;
-    }
-
-    .gallery-photo:hover img {
-        transform: scale(1.025);
-    }
-}
-
-/* =========================================================
-   VISOR DE FOTOS A PANTALLA COMPLETA
-   ========================================================= */
+/* VISOR: muestra la foto completa */
 
 #photo-viewer {
     position: fixed;
     inset: 0;
-    z-index: 9999;
+    z-index: 1000;
     display: none;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    height: 100%;
-    padding: 64px 76px;
+    padding: 60px 70px;
     overflow: hidden;
     background: rgba(0, 0, 0, 0.94);
     opacity: 0;
@@ -341,7 +322,6 @@ button:focus-visible {
     opacity: 1;
 }
 
-/* La foto original se muestra entera, sin recortarse ni aplastarse */
 #viewer-image {
     display: block;
     width: auto;
@@ -350,16 +330,8 @@ button:focus-visible {
     max-height: 100%;
     object-fit: contain;
     object-position: center;
-    border-radius: 3px;
-    opacity: 1;
-    transition: opacity 120ms ease;
 }
 
-#viewer-image.photo-changing {
-    opacity: 0.35;
-}
-
-/* Botones del visor */
 #close-viewer,
 #previous-photo,
 #next-photo,
@@ -369,52 +341,41 @@ button:focus-visible {
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid rgba(255, 255, 255, 0.28);
+    border: 1px solid rgba(255, 255, 255, 0.3);
     border-radius: 999px;
-    background: rgba(30, 30, 30, 0.78);
-    color: #ffffff;
+    background: rgba(35, 35, 35, 0.85);
+    color: #fff;
     cursor: pointer;
     appearance: none;
     -webkit-appearance: none;
 }
 
-#close-viewer:hover,
-#previous-photo:hover,
-#next-photo:hover,
-#download-photo:hover {
-    background: rgba(70, 70, 70, 0.95);
-}
-
-/* Cerrar visor */
 #close-viewer {
-    top: 16px;
-    right: 16px;
+    top: 14px;
+    right: 14px;
     width: 44px;
     height: 44px;
     padding: 0;
     font-size: 28px;
-    line-height: 1;
 }
 
-/* Anterior y siguiente */
 #previous-photo,
 #next-photo {
     top: 50%;
-    width: 46px;
-    height: 46px;
+    width: 44px;
+    height: 44px;
     padding: 0;
     transform: translateY(-50%);
 }
 
 #previous-photo {
-    left: 16px;
+    left: 14px;
 }
 
 #next-photo {
-    right: 16px;
+    right: 14px;
 }
 
-/* Iconos SVG */
 #previous-photo svg,
 #next-photo svg,
 #download-photo svg {
@@ -428,57 +389,36 @@ button:focus-visible {
     stroke-linejoin: round;
 }
 
-/* Descargar */
 #download-photo {
-    right: 16px;
-    bottom: 16px;
-    min-width: 44px;
+    right: 14px;
+    bottom: 14px;
     min-height: 44px;
     gap: 8px;
-    padding: 0 15px;
+    padding: 0 14px;
     font-size: 13px;
-    font-weight: 600;
 }
 
-/* Contador */
 #photo-counter {
     position: absolute;
     bottom: 27px;
     left: 50%;
-    color: rgba(255, 255, 255, 0.9);
+    color: #fff;
     font-size: 13px;
     font-variant-numeric: tabular-nums;
-    text-align: center;
     transform: translateX(-50%);
 }
 
-/* =========================================================
-   TABLET Y MÓVIL
-   ========================================================= */
+/* MÓVIL */
 
 @media (max-width: 700px) {
+    :root {
+        --header-height: 66px;
+    }
+
     .main-header {
-        min-height: 76px;
-        padding: 16px 18px;
+        padding: 0 18px;
     }
 
-    #map-container {
-        min-height: 350px;
-        padding: 12px;
-    }
-
-    #map {
-        min-height: 320px;
-        border-radius: 14px;
-    }
-
-    .city-button {
-        min-height: 34px;
-        padding: 7px 10px;
-        font-size: 12px;
-    }
-
-    /* En móvil el panel ocupa la pantalla y su galería puede desplazarse */
     #photo-panel {
         width: 100%;
         border-left: 0;
@@ -486,31 +426,42 @@ button:focus-visible {
 
     .panel-header {
         min-height: 82px;
-        padding: 15px 16px;
+        padding: 14px 16px;
     }
 
     #gallery {
         grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 8px;
-        padding: 12px;
+        gap: 7px;
+        padding: 10px;
+    }
+
+    .gallery-photo,
+    .gallery-add-button {
+        border-radius: 6px;
+    }
+
+    .city-button {
+        min-height: 32px;
+        padding: 7px 9px;
+        font-size: 11px;
     }
 
     #photo-viewer {
-        padding: 58px 46px;
+        padding: 56px 44px;
     }
 
     #previous-photo,
     #next-photo {
-        width: 38px;
-        height: 38px;
+        width: 36px;
+        height: 36px;
     }
 
     #previous-photo {
-        left: 5px;
+        left: 4px;
     }
 
     #next-photo {
-        right: 5px;
+        right: 4px;
     }
 
     #close-viewer {
@@ -522,7 +473,6 @@ button:focus-visible {
         right: 8px;
         bottom: 8px;
         min-height: 40px;
-        padding: 0 12px;
     }
 
     #photo-counter {
@@ -530,22 +480,22 @@ button:focus-visible {
     }
 }
 
-/* En móviles con suficiente anchura: cuatro fotos por fila */
+/* Cuatro columnas en móviles con suficiente anchura */
+
 @media (min-width: 480px) and (max-width: 700px) {
     #gallery {
         grid-template-columns: repeat(4, minmax(0, 1fr));
     }
 }
 
-/* Pantallas muy estrechas */
 @media (max-width: 359px) {
     #gallery {
-        gap: 6px;
-        padding: 8px;
+        gap: 5px;
+        padding: 7px;
     }
 
     #photo-viewer {
-        padding: 54px 40px;
+        padding: 52px 38px;
     }
 
     #download-photo {
@@ -559,12 +509,10 @@ button:focus-visible {
     }
 }
 
-/* Reducir animaciones si el dispositivo lo solicita */
 @media (prefers-reduced-motion: reduce) {
     *,
     *::before,
     *::after {
-        scroll-behavior: auto !important;
         transition-duration: 0.01ms !important;
         animation-duration: 0.01ms !important;
         animation-iteration-count: 1 !important;
