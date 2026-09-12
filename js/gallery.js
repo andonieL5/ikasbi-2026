@@ -2,360 +2,347 @@
 // IKASBI 2026 — GALERÍA DE FOTOS
 // ==========================================
 
+(() => {
+    "use strict";
 
-// ==========================================
-// ELEMENTOS DE LA INTERFAZ
-// ==========================================
+    // Evita inicializar el mismo script dos veces.
+    if (window.__ikasbiGalleryInitialized) {
+        return;
+    }
+    window.__ikasbiGalleryInitialized = true;
 
-const gallery = document.getElementById("gallery");
+    // ==========================================
+    // ELEMENTOS
+    // ==========================================
 
-const photoViewer = document.getElementById("photo-viewer");
-const viewerImage = document.getElementById("viewer-image");
-const closeViewer = document.getElementById("close-viewer");
-const downloadPhoto = document.getElementById("download-photo");
-const previousPhoto = document.getElementById("previous-photo");
-const nextPhoto = document.getElementById("next-photo");
-const photoCounter = document.getElementById("photo-counter");
+    const gallery = document.getElementById("gallery");
+    const photoViewer = document.getElementById("photo-viewer");
+    const viewerImage = document.getElementById("viewer-image");
+    const closeViewer = document.getElementById("close-viewer");
+    const downloadPhoto = document.getElementById("download-photo");
+    const previousPhoto = document.getElementById("previous-photo");
+    const nextPhoto = document.getElementById("next-photo");
+    const photoCounter = document.getElementById("photo-counter");
 
-
-// ==========================================
-// FOTOS DE PRUEBA
-// ==========================================
-
-const testPhotos = [
-    "https://images.unsplash.com/photo-1500534623283-312aade485b7",
-    "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
-    "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
-    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
-    "https://images.unsplash.com/photo-1493246507139-91e8fad9978e",
-    "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
-    "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
-    "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
-    "https://images.unsplash.com/photo-1500534623283-312aade485b7",
-    "https://images.unsplash.com/photo-1519681393784-d120267933ba",
-    "https://images.unsplash.com/photo-1500534623283-312aade485b7",
-    "https://images.unsplash.com/photo-1470770841072-f978cf4d019e"
-];
-
-
-// ==========================================
-// LISTA DE FOTOS
-// ==========================================
-
-// Cada foto tendrá:
-// - url: dirección de la imagen
-// - downloadUrl: dirección para descargarla
-// - fileName: nombre del archivo
-// - objectUrl: indica si es una imagen local temporal
-
-const photos = testPhotos.map((url, index) => ({
-    url: `${url}?auto=format&fit=crop&w=800&q=80`,
-    downloadUrl: `${url}?auto=format&fit=max&w=2400&q=95`,
-    fileName: `ikasbi-2026-foto-${index + 1}.jpg`,
-    objectUrl: false
-}));
-
-
-// ==========================================
-// FOTO ACTUAL
-// ==========================================
-
-let currentPhotoIndex = 0;
-
-
-// ==========================================
-// CREAR BOTÓN PARA SUBIR FOTOS
-// ==========================================
-
-const fileInput = document.createElement("input");
-
-fileInput.type = "file";
-fileInput.accept = "image/*";
-fileInput.multiple = true;
-fileInput.hidden = true;
-
-fileInput.setAttribute(
-    "aria-label",
-    "Seleccionar fotografías"
-);
-
-document.body.appendChild(fileInput);
-
-
-// ==========================================
-// MOSTRAR FOTO EN EL VISOR
-// ==========================================
-
-function showPhoto(index) {
-    if (photos.length === 0) {
+    // Si falta algún elemento principal, evita que la página se rompa.
+    if (!gallery) {
+        console.error('No se encontró el elemento con id="gallery".');
         return;
     }
 
-    // Volver al final si se retrocede desde la primera foto.
-    if (index < 0) {
-        index = photos.length - 1;
+    // ==========================================
+    // FOTOS DE PRUEBA
+    // ==========================================
+
+    // "original" se usa en el visor.
+    // "preview" se usa en las miniaturas.
+    const testPhotos = [
+        "https://images.unsplash.com/photo-1500534623283-312aade485b7",
+        "https://images.unsplash.com/photo-1507525428034-b723cf961d3e",
+        "https://images.unsplash.com/photo-1501785888041-af3ef285b470",
+        "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+        "https://images.unsplash.com/photo-1493246507139-91e8fad9978e",
+        "https://images.unsplash.com/photo-1500530855697-b586d89ba3ee",
+        "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
+        "https://images.unsplash.com/photo-1469474968028-56623f02e42e",
+        "https://images.unsplash.com/photo-1519681393784-d120267933ba",
+        "https://images.unsplash.com/photo-1500534623283-312aade485b7",
+        "https://images.unsplash.com/photo-1470770841072-f978cf4d019e",
+        "https://images.unsplash.com/photo-1501785888041-af3ef285b470"
+    ];
+
+    const photos = testPhotos.map((url, index) => ({
+        original: url,
+        preview: `${url}?auto=format&fit=max&w=700&q=75`,
+        fileName: `ikasbi-2026-foto-${index + 1}.jpg`,
+        temporaryObjectUrl: false
+    }));
+
+    let currentPhotoIndex = 0;
+
+    // ==========================================
+    // SELECTOR DE ARCHIVOS
+    // ==========================================
+
+    const fileInput = document.createElement("input");
+
+    fileInput.type = "file";
+    fileInput.accept = "image/*";
+    fileInput.multiple = true;
+    fileInput.hidden = true;
+    fileInput.setAttribute("aria-label", "Seleccionar fotografías");
+
+    document.body.appendChild(fileInput);
+
+    // ==========================================
+    // ACTUALIZAR CONTADOR
+    // ==========================================
+
+    function updateCounter() {
+        if (photoCounter) {
+            photoCounter.textContent =
+                `${currentPhotoIndex + 1} / ${photos.length}`;
+        }
     }
 
-    // Volver al principio si se avanza desde la última foto.
-    if (index >= photos.length) {
-        index = 0;
+    // ==========================================
+    // MOSTRAR FOTO EN EL VISOR
+    // ==========================================
+
+    function showPhoto(index) {
+        if (!viewerImage || photos.length === 0) {
+            return;
+        }
+
+        if (index < 0) {
+            index = photos.length - 1;
+        }
+
+        if (index >= photos.length) {
+            index = 0;
+        }
+
+        currentPhotoIndex = index;
+
+        const photo = photos[currentPhotoIndex];
+
+        viewerImage.classList.add("photo-changing");
+
+        // Carga la imagen original, no la miniatura.
+        const originalImage = new Image();
+
+        originalImage.onload = () => {
+            viewerImage.src = photo.original;
+            viewerImage.alt = `Fotografía ${currentPhotoIndex + 1}`;
+            viewerImage.classList.remove("photo-changing");
+            updateCounter();
+        };
+
+        originalImage.onerror = () => {
+            // Si la original falla, intenta mostrar la versión de miniatura.
+            viewerImage.src = photo.preview;
+            viewerImage.alt = `Fotografía ${currentPhotoIndex + 1}`;
+            viewerImage.classList.remove("photo-changing");
+            updateCounter();
+        };
+
+        originalImage.src = photo.original;
     }
 
-    currentPhotoIndex = index;
+    // ==========================================
+    // ABRIR VISOR
+    // ==========================================
 
-    const photo = photos[currentPhotoIndex];
+    function openPhoto(index) {
+        if (!photoViewer || !viewerImage) {
+            console.error(
+                'Falta photo-viewer o viewer-image en el HTML.'
+            );
+            return;
+        }
 
-    viewerImage.classList.add("photo-changing");
+        showPhoto(index);
 
-    setTimeout(() => {
-        viewerImage.src = photo.url;
+        photoViewer.style.display = "flex";
 
-        photoCounter.textContent =
-            `${currentPhotoIndex + 1} / ${photos.length}`;
-
-        viewerImage.classList.remove("photo-changing");
-    }, 120);
-}
-
-
-// ==========================================
-// ABRIR VISOR
-// ==========================================
-
-function openPhoto(index) {
-    showPhoto(index);
-
-    photoViewer.style.display = "flex";
-
-    requestAnimationFrame(() => {
-        photoViewer.classList.add("viewer-open");
-    });
-}
-
-
-// ==========================================
-// CERRAR VISOR
-// ==========================================
-
-function closePhotoViewer() {
-    photoViewer.classList.remove("viewer-open");
-
-    setTimeout(() => {
-        photoViewer.style.display = "none";
-        viewerImage.src = "";
-    }, 250);
-}
-
-
-// ==========================================
-// FOTO ANTERIOR
-// ==========================================
-
-function showPreviousPhoto() {
-    showPhoto(currentPhotoIndex - 1);
-}
-
-
-// ==========================================
-// FOTO SIGUIENTE
-// ==========================================
-
-function showNextPhoto() {
-    showPhoto(currentPhotoIndex + 1);
-}
-
-
-// ==========================================
-// AÑADIR FOTOS SELECCIONADAS
-// ==========================================
-
-function addSelectedPhotos(files) {
-    const imageFiles = Array.from(files).filter(file =>
-        file.type.startsWith("image/")
-    );
-
-    if (imageFiles.length === 0) {
-        return;
-    }
-
-    imageFiles.forEach(file => {
-        const localUrl = URL.createObjectURL(file);
-
-        photos.push({
-            url: localUrl,
-            downloadUrl: localUrl,
-            fileName: file.name,
-            objectUrl: true
+        requestAnimationFrame(() => {
+            photoViewer.classList.add("viewer-open");
         });
-    });
 
-    renderGallery();
-}
+        document.body.style.overflow = "hidden";
+    }
 
+    // ==========================================
+    // CERRAR VISOR
+    // ==========================================
 
-// ==========================================
-// CREAR GALERÍA
-// ==========================================
+    function closePhotoViewer() {
+        if (!photoViewer) {
+            return;
+        }
 
-function renderGallery() {
-    gallery.innerHTML = "";
+        photoViewer.classList.remove("viewer-open");
 
-    // ---------- Botón + ----------
+        setTimeout(() => {
+            photoViewer.style.display = "none";
 
-    const addButton = document.createElement("button");
+            if (viewerImage) {
+                viewerImage.removeAttribute("src");
+            }
 
-    addButton.type = "button";
-    addButton.className = "gallery-add-button";
-    addButton.textContent = "+";
+            document.body.style.overflow = "";
+        }, 220);
+    }
 
-    addButton.setAttribute(
-        "aria-label",
-        "Añadir fotografías"
-    );
+    // ==========================================
+    // ANTERIOR / SIGUIENTE
+    // ==========================================
 
-    addButton.title = "Añadir fotografías";
+    function showPreviousPhoto() {
+        showPhoto(currentPhotoIndex - 1);
+    }
 
-    addButton.addEventListener("click", () => {
-        fileInput.click();
-    });
+    function showNextPhoto() {
+        showPhoto(currentPhotoIndex + 1);
+    }
 
-    // El botón + aparece primero en la galería.
-    gallery.appendChild(addButton);
+    // ==========================================
+    // DESCARGAR FOTO
+    // ==========================================
 
+    function downloadCurrentPhoto() {
+        if (photos.length === 0) {
+            return;
+        }
 
-    // ---------- Fotos ----------
+        const photo = photos[currentPhotoIndex];
+        const link = document.createElement("a");
 
-    photos.forEach((photo, index) => {
-        const photoElement = document.createElement("button");
+        link.href = photo.original;
+        link.download = photo.fileName;
+        link.target = "_blank";
+        link.rel = "noopener";
 
-        photoElement.type = "button";
-        photoElement.className = "gallery-photo";
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+    }
 
-        photoElement.setAttribute(
-            "aria-label",
-            `Abrir fotografía ${index + 1}`
+    // ==========================================
+    // AÑADIR FOTOS DESDE EL DISPOSITIVO
+    // ==========================================
+
+    function addSelectedPhotos(fileList) {
+        const files = Array.from(fileList || []).filter(file =>
+            file.type.startsWith("image/")
         );
 
-        const image = document.createElement("img");
+        if (files.length === 0) {
+            return;
+        }
 
-        image.src = photo.url;
-        image.alt = `Fotografía ${index + 1}`;
-        image.loading = "lazy";
-        image.draggable = false;
+        files.forEach(file => {
+            const localUrl = URL.createObjectURL(file);
 
-        photoElement.appendChild(image);
-
-        photoElement.addEventListener("click", () => {
-            openPhoto(index);
+            photos.push({
+                original: localUrl,
+                preview: localUrl,
+                fileName: file.name || "foto-ikasbi.jpg",
+                temporaryObjectUrl: true
+            });
         });
 
-        gallery.appendChild(photoElement);
+        renderGallery();
+    }
+
+    // ==========================================
+    // DIBUJAR GALERÍA
+    // ==========================================
+
+    function renderGallery() {
+        gallery.replaceChildren();
+
+        // Botón para añadir fotos.
+        const addButton = document.createElement("button");
+
+        addButton.type = "button";
+        addButton.className = "gallery-add-button";
+        addButton.textContent = "+";
+        addButton.title = "Añadir fotografías";
+        addButton.setAttribute("aria-label", "Añadir fotografías");
+
+        addButton.addEventListener("click", () => {
+            fileInput.click();
+        });
+
+        gallery.appendChild(addButton);
+
+        // Una foto = un botón = una celda de la cuadrícula.
+        photos.forEach((photo, index) => {
+            const photoButton = document.createElement("button");
+
+            photoButton.type = "button";
+            photoButton.className = "gallery-photo";
+            photoButton.setAttribute(
+                "aria-label",
+                `Abrir fotografía ${index + 1}`
+            );
+
+            const image = document.createElement("img");
+
+            image.src = photo.preview;
+            image.alt = `Fotografía ${index + 1}`;
+            image.loading = "lazy";
+            image.decoding = "async";
+            image.draggable = false;
+
+            photoButton.appendChild(image);
+
+            photoButton.addEventListener("click", () => {
+                openPhoto(index);
+            });
+
+            gallery.appendChild(photoButton);
+        });
+    }
+
+    // ==========================================
+    // EVENTOS
+    // ==========================================
+
+    fileInput.addEventListener("change", event => {
+        addSelectedPhotos(event.target.files);
+
+        // Permite volver a seleccionar el mismo archivo.
+        fileInput.value = "";
     });
-}
 
-
-// ==========================================
-// SELECCIONAR ARCHIVOS
-// ==========================================
-
-fileInput.addEventListener("change", event => {
-    addSelectedPhotos(event.target.files);
-
-    // Permite volver a seleccionar el mismo archivo.
-    fileInput.value = "";
-});
-
-
-// ==========================================
-// CERRAR VISOR
-// ==========================================
-
-closeViewer.addEventListener(
-    "click",
-    closePhotoViewer
-);
-
-
-// ==========================================
-// FOTO ANTERIOR
-// ==========================================
-
-previousPhoto.addEventListener(
-    "click",
-    showPreviousPhoto
-);
-
-
-// ==========================================
-// FOTO SIGUIENTE
-// ==========================================
-
-nextPhoto.addEventListener(
-    "click",
-    showNextPhoto
-);
-
-
-// ==========================================
-// DESCARGAR FOTO
-// ==========================================
-
-downloadPhoto.addEventListener("click", () => {
-    if (photos.length === 0) {
-        return;
+    if (closeViewer) {
+        closeViewer.addEventListener("click", closePhotoViewer);
     }
 
-    const photo = photos[currentPhotoIndex];
-
-    const link = document.createElement("a");
-
-    link.href = photo.downloadUrl;
-    link.download = photo.fileName;
-    link.target = "_blank";
-    link.rel = "noopener";
-
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-});
-
-
-// ==========================================
-// CERRAR AL PULSAR FUERA DE LA FOTO
-// ==========================================
-
-photoViewer.addEventListener("click", event => {
-    if (event.target === photoViewer) {
-        closePhotoViewer();
-    }
-});
-
-
-// ==========================================
-// CONTROLES DE TECLADO
-// ==========================================
-
-document.addEventListener("keydown", event => {
-    if (!photoViewer.classList.contains("viewer-open")) {
-        return;
+    if (previousPhoto) {
+        previousPhoto.addEventListener("click", showPreviousPhoto);
     }
 
-    if (event.key === "Escape") {
-        closePhotoViewer();
+    if (nextPhoto) {
+        nextPhoto.addEventListener("click", showNextPhoto);
     }
 
-    if (event.key === "ArrowLeft") {
-        showPreviousPhoto();
+    if (downloadPhoto) {
+        downloadPhoto.addEventListener("click", downloadCurrentPhoto);
     }
 
-    if (event.key === "ArrowRight") {
-        showNextPhoto();
+    // Cerrar al tocar el fondo oscuro, no la foto.
+    if (photoViewer) {
+        photoViewer.addEventListener("click", event => {
+            if (event.target === photoViewer) {
+                closePhotoViewer();
+            }
+        });
     }
-});
 
+    // Teclado: Escape, flecha izquierda y flecha derecha.
+    document.addEventListener("keydown", event => {
+        if (
+            !photoViewer ||
+            !photoViewer.classList.contains("viewer-open")
+        ) {
+            return;
+        }
 
-// ==========================================
-// INICIAR GALERÍA
-// ==========================================
+        if (event.key === "Escape") {
+            closePhotoViewer();
+        } else if (event.key === "ArrowLeft") {
+            showPreviousPhoto();
+        } else if (event.key === "ArrowRight") {
+            showNextPhoto();
+        }
+    });
 
-renderGallery();
+    // ==========================================
+    // INICIAR
+    // ==========================================
+
+    renderGallery();
+})();
