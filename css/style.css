@@ -5,11 +5,11 @@
 :root {
     color-scheme: light;
     --page-bg: #f7f8fa;
-    --panel-bg: rgba(255, 255, 255, 0.94);
+    --panel-bg: rgba(255, 255, 255, 0.96);
     --text: #202124;
     --muted: #7b8088;
     --line: rgba(32, 33, 36, 0.10);
-    --accent: #2463eb;
+    --accent: #64748b;
     --shadow: 0 18px 55px rgba(25, 35, 55, 0.14);
 }
 
@@ -39,7 +39,7 @@ button {
 }
 
 button:focus-visible {
-    outline: 3px solid rgba(36, 99, 235, 0.65);
+    outline: 3px solid rgba(100, 116, 139, 0.55);
     outline-offset: 3px;
 }
 
@@ -85,7 +85,8 @@ button:focus-visible {
 }
 
 /* ==========================================
-   MAPA BLANCO A PANTALLA COMPLETA
+   MAPA
+   No cambia el encuadre ni el map.js.
    ========================================== */
 
 #map-container {
@@ -118,9 +119,10 @@ button:focus-visible {
     vector-effect: non-scaling-stroke;
 }
 
+/* Ruta en un tono gris azulado suave, no azul intenso */
 .travel-route {
     fill: none;
-    stroke: #4f83e8;
+    stroke: #c5cdd7;
     stroke-width: 2.5;
     stroke-linecap: round;
     stroke-linejoin: round;
@@ -129,7 +131,7 @@ button:focus-visible {
 
 .city-point {
     fill: #fff;
-    stroke: #3975e8;
+    stroke: #aab5c3;
     stroke-width: 2.5;
     vector-effect: non-scaling-stroke;
 }
@@ -142,7 +144,7 @@ button:focus-visible {
     padding: 9px 14px;
     border: 1px solid rgba(33, 43, 58, 0.12);
     border-radius: 999px;
-    background: rgba(255, 255, 255, 0.94);
+    background: rgba(255, 255, 255, 0.96);
     box-shadow: 0 3px 12px rgba(40, 50, 70, 0.08);
     color: #303844;
     font-size: 12px;
@@ -163,14 +165,14 @@ button:focus-visible {
 
 .city-button:hover,
 .city-button:focus-visible {
-    border-color: rgba(57, 117, 232, 0.45);
+    border-color: rgba(100, 116, 139, 0.45);
     background: #fff;
-    box-shadow: 0 5px 18px rgba(40, 70, 130, 0.15);
+    box-shadow: 0 5px 18px rgba(40, 50, 70, 0.12);
 }
 
 .city-button.city-active {
-    border-color: #3975e8;
-    background: #3975e8;
+    border-color: #64748b;
+    background: #64748b;
     color: #fff;
 }
 
@@ -184,19 +186,27 @@ button:focus-visible {
     top: 16px;
     right: 16px;
     bottom: 16px;
+
     display: flex;
     flex-direction: column;
+
     width: min(520px, calc(100% - 32px));
     min-width: 0;
+    min-height: 0;
+
     overflow: hidden;
+
     border: 1px solid rgba(255, 255, 255, 0.85);
     border-radius: 25px;
     background: var(--panel-bg);
     box-shadow: var(--shadow);
+
     -webkit-backdrop-filter: blur(24px);
     backdrop-filter: blur(24px);
+
     transform: translateX(calc(100% + 35px));
     visibility: hidden;
+
     transition:
         transform 0.38s cubic-bezier(0.22, 1, 0.36, 1),
         visibility 0.38s;
@@ -231,6 +241,7 @@ button:focus-visible {
     font-size: 28px;
     font-weight: 700;
     letter-spacing: -0.055em;
+    overflow-wrap: anywhere;
 }
 
 #close-panel {
@@ -255,36 +266,60 @@ button:focus-visible {
 }
 
 /* ==========================================
-   CUADRÍCULA DE FOTOS
+   GALERÍA
+   El desplazamiento ocurre dentro del panel.
    ========================================== */
 
 #gallery {
     display: grid;
+
+    /* Cuatro columnas estables en escritorio */
     grid-template-columns: repeat(4, minmax(0, 1fr));
+
+    /* Cada fila mide lo que necesitan sus tarjetas */
+    grid-auto-rows: max-content;
+    grid-auto-flow: row;
+
     align-content: start;
     align-items: start;
-    gap: 12px;
-    flex: 1 1 auto;
+
+    flex: 1 1 0;
+    min-width: 0;
     min-height: 0;
+
+    gap: 12px;
     padding: 0 22px 24px;
+
     overflow-x: hidden;
     overflow-y: auto;
     overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+
     scrollbar-width: thin;
     scrollbar-color: #d0d4da transparent;
 }
 
+/* Todas las tarjetas ocupan su celda sin superponerse */
 .gallery-photo,
 .gallery-add-button {
     position: relative;
     display: block;
+
     width: 100%;
     min-width: 0;
+    min-height: 0;
+    height: auto;
     aspect-ratio: 3 / 4;
+
+    align-self: start;
+    justify-self: stretch;
+
     padding: 0;
     overflow: hidden;
+
     border-radius: 12px;
     cursor: pointer;
+
     -webkit-appearance: none;
     appearance: none;
 }
@@ -294,18 +329,28 @@ button:focus-visible {
     background: #e9edf2;
 }
 
-.gallery-photo img {
+/* Miniaturas: se recortan, no se deforman */
+.gallery-photo img,
+.gallery-photo video {
     display: block;
     width: 100%;
     height: 100%;
+    max-width: 100%;
+
     object-fit: cover;
     object-position: center;
+
+    pointer-events: none;
 }
 
+/* Botón para añadir fotos */
 .gallery-add-button {
-    display: grid;
-    place-items: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
     gap: 5px;
+
     border: 1.5px dashed #cbd1da;
     background: rgba(245, 247, 250, 0.75);
     color: #747d89;
@@ -323,13 +368,14 @@ button:focus-visible {
 }
 
 .gallery-add-button:hover {
-    border-color: #8da9df;
-    background: #f0f5ff;
-    color: #3769c4;
+    border-color: #aab5c3;
+    background: #f4f6f8;
+    color: #4b5563;
 }
 
 .gallery-empty {
     grid-column: 1 / -1;
+    margin: 0;
     padding: 18px 4px;
     color: #858c96;
     font-size: 13px;
@@ -348,14 +394,18 @@ button:focus-visible {
     position: fixed;
     z-index: 1000;
     inset: 0;
+
     display: none;
     align-items: center;
     justify-content: center;
+
     padding: 76px 82px;
     overflow: hidden;
+
     background: rgba(20, 24, 31, 0.66);
     -webkit-backdrop-filter: blur(12px);
     backdrop-filter: blur(12px);
+
     opacity: 0;
     transition: opacity 0.22s ease;
 }
@@ -365,15 +415,21 @@ button:focus-visible {
     opacity: 1;
 }
 
-#viewer-image {
+#viewer-image,
+.viewer-video {
     display: block;
     width: auto;
     height: auto;
+
     max-width: 100%;
     max-height: 100%;
+
     object-fit: contain;
     border-radius: 8px;
     box-shadow: 0 18px 70px rgba(0, 0, 0, 0.28);
+}
+
+#viewer-image {
     transition: opacity 0.16s ease;
 }
 
@@ -387,15 +443,19 @@ button:focus-visible {
 #download-photo {
     position: absolute;
     z-index: 2;
+
     display: flex;
     align-items: center;
     justify-content: center;
+
     border: 1px solid rgba(255, 255, 255, 0.28);
     background: rgba(255, 255, 255, 0.94);
     color: #252a32;
+
     cursor: pointer;
     -webkit-appearance: none;
     appearance: none;
+
     transition:
         background 0.18s ease,
         transform 0.18s ease;
@@ -411,9 +471,11 @@ button:focus-visible {
 #close-viewer {
     top: 20px;
     right: 22px;
+
     width: 44px;
     height: 44px;
     padding: 0;
+
     border-radius: 50%;
     font-size: 29px;
     line-height: 1;
@@ -422,9 +484,11 @@ button:focus-visible {
 #previous-photo,
 #next-photo {
     top: 50%;
+
     width: 46px;
     height: 46px;
     padding: 11px;
+
     border-radius: 50%;
     transform: translateY(-50%);
 }
@@ -441,6 +505,7 @@ button:focus-visible {
 #next-photo svg {
     width: 100%;
     height: 100%;
+
     fill: none;
     stroke: currentColor;
     stroke-width: 1.8;
@@ -451,9 +516,11 @@ button:focus-visible {
 #download-photo {
     right: 22px;
     bottom: 20px;
+
     gap: 9px;
     min-height: 44px;
     padding: 0 17px;
+
     border-radius: 999px;
     font-size: 13px;
     font-weight: 600;
@@ -462,6 +529,7 @@ button:focus-visible {
 #download-photo svg {
     width: 18px;
     height: 18px;
+
     fill: none;
     stroke: currentColor;
     stroke-width: 1.7;
@@ -473,7 +541,9 @@ button:focus-visible {
     position: absolute;
     bottom: 32px;
     left: 50%;
+
     transform: translateX(-50%);
+
     color: #fff;
     font-size: 13px;
     font-variant-numeric: tabular-nums;
@@ -502,8 +572,13 @@ button:focus-visible {
         right: 8px;
         bottom: 8px;
         left: 8px;
+
         width: auto;
-        height: min(76dvh, 720px);
+        height: 76vh;
+        height: 76dvh;
+        max-height: 720px;
+        min-height: 0;
+
         border-radius: 22px;
         transform: translateY(calc(100% + 20px));
     }
@@ -521,6 +596,7 @@ button:focus-visible {
     }
 
     #gallery {
+        /* Tres columnas en móvil */
         grid-template-columns: repeat(3, minmax(0, 1fr));
         gap: 9px;
         padding: 0 14px 18px;
@@ -535,7 +611,8 @@ button:focus-visible {
         padding: 68px 12px 78px;
     }
 
-    #viewer-image {
+    #viewer-image,
+    .viewer-video {
         max-width: 100%;
         max-height: 100%;
         border-radius: 7px;
