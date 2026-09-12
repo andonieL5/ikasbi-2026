@@ -1,314 +1,81 @@
 <!DOCTYPE html>
 <html lang="es">
-
 <head>
-
     <meta charset="UTF-8">
-
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
-
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#ffffff">
     <title>IKASBI 2026</title>
-
-    <link
-        rel="stylesheet"
-        href="css/style.css"
-    >
-
+    <link rel="stylesheet" href="css/style.css">
 </head>
-
-
 <body>
-
     <main id="app">
-
-
-        <!-- ==========================================
-             CABECERA
-        ========================================== -->
-
         <header class="main-header">
-
-            <h1>
-                IKASBI 2026
-            </h1>
-
+            <h1>IKASBI 2026</h1>
         </header>
 
-
-
-        <!-- ==========================================
-             MAPA
-        ========================================== -->
-
-        <section id="map-container">
-
+        <section id="map-container" aria-label="Mapa del viaje">
             <div id="map">
+                <div id="route" aria-hidden="true"></div>
 
-                <div id="route"></div>
-
-
-                <button
-                    class="city-button"
-                    id="city-tolosa"
-                >
-                    Tolosa
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-clermont"
-                >
-                    Clermont-Ferrand
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-munich"
-                >
-                    Múnich
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-prague"
-                >
-                    Praga
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-berlin"
-                >
-                    Berlín
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-amsterdam"
-                >
-                    Ámsterdam
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-bruges"
-                >
-                    Brujas
-                </button>
-
-
-                <button
-                    class="city-button"
-                    id="city-paris"
-                >
-                    París
-                </button>
-
+                <button class="city-button" id="city-tolosa" type="button">Tolosa</button>
+                <button class="city-button" id="city-clermont" type="button">Clermont-Ferrand</button>
+                <button class="city-button" id="city-munich" type="button">Múnich</button>
+                <button class="city-button" id="city-prague" type="button">Praga</button>
+                <button class="city-button" id="city-berlin" type="button">Berlín</button>
+                <button class="city-button" id="city-amsterdam" type="button">Ámsterdam</button>
+                <button class="city-button" id="city-bruges" type="button">Brujas</button>
+                <button class="city-button" id="city-paris" type="button">París</button>
             </div>
-
         </section>
 
-
-
-        <!-- ==========================================
-             PANEL DE FOTOS
-        ========================================== -->
-
-        <aside id="photo-panel">
-
-
+        <aside id="photo-panel" aria-label="Galería de fotos" aria-hidden="true">
             <div class="panel-header">
-
                 <div>
-
-                    <span class="panel-subtitle">
-                        FOTOS DEL VIAJE
-                    </span>
-
-                    <h2 id="panel-city">
-                        París
-                    </h2>
-
+                    <span class="panel-subtitle">FOTOS DEL VIAJE</span>
+                    <h2 id="panel-city">Tolosa</h2>
                 </div>
-
-
-                <button
-                    id="close-panel"
-                    aria-label="Cerrar"
-                >
-                    ×
-                </button>
-
+                <button id="close-panel" type="button" aria-label="Cerrar galería">×</button>
             </div>
 
-
-            <div id="gallery">
-            </div>
-
-
-            <button
-                id="add-photo-button"
-                aria-label="Añadir fotografías"
-            >
-                +
-            </button>
-
-
+            <div id="gallery"></div>
+            <input id="photo-file-input" type="file" accept="image/*" multiple hidden>
         </aside>
 
+        <div id="photo-viewer" aria-hidden="true">
+            <button id="close-viewer" type="button" aria-label="Cerrar fotografía">×</button>
 
-
-        <!-- ==========================================
-             VISOR DE FOTOS
-        ========================================== -->
-
-        <div id="photo-viewer">
-
-
-            <!-- CERRAR -->
-
-            <button
-                id="close-viewer"
-                aria-label="Cerrar fotografía"
-            >
-                ×
-            </button>
-
-
-
-            <!-- DESCARGAR -->
-
-            <button
-                id="download-photo"
-                aria-label="Descargar fotografía"
-            >
-
-                <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-
-                    <path
-                        d="M12 3v11"
-                    />
-
-                    <path
-                        d="M7 10l5 5 5-5"
-                    />
-
-                    <path
-                        d="M5 20h14"
-                    />
-
+            <button id="previous-photo" class="viewer-arrow viewer-arrow-left"
+                    type="button" aria-label="Fotografía anterior">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M15 5l-7 7 7 7"></path>
                 </svg>
-
-                <span>
-                    Descargar
-                </span>
-
             </button>
 
-
-
-            <!-- FOTO ANTERIOR -->
-
-            <button
-                id="previous-photo"
-                class="viewer-arrow viewer-arrow-left"
-                aria-label="Fotografía anterior"
-            >
-
-                <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-
-                    <path
-                        d="M15 5l-7 7 7 7"
-                    />
-
+            <button id="next-photo" class="viewer-arrow viewer-arrow-right"
+                    type="button" aria-label="Fotografía siguiente">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M9 5l7 7-7 7"></path>
                 </svg>
-
             </button>
 
+            <div id="photo-counter" aria-live="polite">0 / 0</div>
 
-
-            <!-- FOTO SIGUIENTE -->
-
-            <button
-                id="next-photo"
-                class="viewer-arrow viewer-arrow-right"
-                aria-label="Fotografía siguiente"
-            >
-
-                <svg
-                    viewBox="0 0 24 24"
-                    aria-hidden="true"
-                >
-
-                    <path
-                        d="M9 5l7 7-7 7"
-                    />
-
+            <button id="download-photo" type="button" aria-label="Descargar fotografía">
+                <svg viewBox="0 0 24 24" aria-hidden="true">
+                    <path d="M12 3v11"></path>
+                    <path d="M7 10l5 5 5-5"></path>
+                    <path d="M5 20h14"></path>
                 </svg>
-
+                <span>Descargar</span>
             </button>
 
-
-
-            <!-- CONTADOR -->
-
-            <div id="photo-counter">
-                1 / 12
-            </div>
-
-
-
-            <!-- FOTO -->
-
-            <img
-                id="viewer-image"
-                src=""
-                alt="Fotografía del viaje"
-            >
-
-
+            <img id="viewer-image" alt="Fotografía del viaje">
         </div>
-
     </main>
 
-
-
-    <!-- ==========================================
-         D3
-    ========================================== -->
-
-    <script
-        src="https://d3js.org/d3.v7.min.js"
-    ></script>
-
-
-
-    <!-- ==========================================
-         JAVASCRIPT DE LA WEB
-    ========================================== -->
-
+    <script src="https://d3js.org/d3.v7.min.js"></script>
     <script src="js/app.js"></script>
-
     <script src="js/map.js"></script>
-
     <script src="js/gallery.js"></script>
-
-
 </body>
-
 </html>
