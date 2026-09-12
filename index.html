@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="es">
+<html lang="eu">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,11 +12,17 @@
     <main id="app">
 
         <header class="main-header">
-            <span class="header-kicker">VIAJE DE FIN DE CURSO</span>
-            <h1>IKASBI <span>2026</span></h1>
+            <span class="header-kicker">IKASTURTE AMAIERAKO BIDAIA</span>
+
+            <h1>
+                IKASBI <span>2026</span>
+            </h1>
         </header>
 
-        <section id="map-container" aria-label="Mapa del recorrido por Europa">
+        <section
+            id="map-container"
+            aria-label="Europan zeharreko ibilbidearen mapa"
+        >
 
             <div id="map">
 
@@ -43,7 +49,7 @@
                     id="city-munich"
                     type="button"
                 >
-                    Múnich
+                    Munich
                 </button>
 
                 <button
@@ -59,7 +65,7 @@
                     id="city-berlin"
                     type="button"
                 >
-                    Berlín
+                    Berlin
                 </button>
 
                 <button
@@ -67,7 +73,7 @@
                     id="city-amsterdam"
                     type="button"
                 >
-                    Ámsterdam
+                    Amsterdam
                 </button>
 
                 <button
@@ -83,7 +89,7 @@
                     id="city-paris"
                     type="button"
                 >
-                    París
+                    Paris
                 </button>
 
             </div>
@@ -92,7 +98,7 @@
 
         <aside
             id="photo-panel"
-            aria-label="Fotos de la ciudad"
+            aria-label="Hiriko argazkiak"
             aria-hidden="true"
         >
 
@@ -101,11 +107,11 @@
                 <div>
 
                     <span class="panel-subtitle">
-                        FOTOS DEL VIAJE
+                        BIDAIAKO ARGAZKIAK
                     </span>
 
                     <h2 id="panel-city">
-                        París
+                        Paris
                     </h2>
 
                 </div>
@@ -113,7 +119,7 @@
                 <button
                     id="close-panel"
                     type="button"
-                    aria-label="Cerrar panel"
+                    aria-label="Panela itxi"
                 >
                     ×
                 </button>
@@ -125,9 +131,9 @@
             <button
                 id="add-photo-button"
                 type="button"
-                aria-label="Añadir fotografías"
+                aria-label="Argazkiak gehitu"
             >
-                Añadir fotos
+                Argazkiak gehitu
             </button>
 
         </aside>
@@ -140,7 +146,7 @@
             <button
                 id="close-viewer"
                 type="button"
-                aria-label="Cerrar fotografía"
+                aria-label="Argazkia itxi"
             >
                 ×
             </button>
@@ -148,8 +154,8 @@
             <button
                 id="download-photo"
                 type="button"
-                aria-label="Descargar fotografía"
-                title="Descargar fotografía"
+                aria-label="Argazkia deskargatu"
+                title="Argazkia deskargatu"
             >
 
                 <svg
@@ -162,7 +168,7 @@
                 </svg>
 
                 <span>
-                    Descargar
+                    Deskargatu
                 </span>
 
             </button>
@@ -171,7 +177,7 @@
                 id="previous-photo"
                 class="viewer-arrow viewer-arrow-left"
                 type="button"
-                aria-label="Fotografía anterior"
+                aria-label="Aurreko argazkia"
             >
 
                 <svg
@@ -187,7 +193,7 @@
                 id="next-photo"
                 class="viewer-arrow viewer-arrow-right"
                 type="button"
-                aria-label="Fotografía siguiente"
+                aria-label="Hurrengo argazkia"
             >
 
                 <svg
@@ -209,17 +215,17 @@
             <img
                 id="viewer-image"
                 src=""
-                alt="Fotografía del viaje"
+                alt="Bidaiako argazkia"
             >
 
         </div>
 
     </main>
 
-    <!-- D3 LOCAL: ya no depende de d3js.org -->
+    <!-- D3 lokala -->
     <script src="js/d3.min.js"></script>
 
-    <!-- Archivos propios del proyecto -->
+    <!-- Proiektuaren JavaScript fitxategiak -->
     <script src="js/app.js"></script>
     <script src="js/map.js"></script>
     <script src="js/gallery.js"></script>
