@@ -1,5 +1,5 @@
 // ==========================================
-// IKASBI 2026 — GALERÍA INDEPENDIENTE POR CIUDAD
+// IKASBI 2026 — GALERÍA DESDE GITHUB
 // ==========================================
 
 (() => {
@@ -9,7 +9,6 @@
     window.__ikasbiGalleryInitialized = true;
 
     const gallery = document.getElementById("gallery");
-    const photoPanel = document.getElementById("photo-panel");
     const photoViewer = document.getElementById("photo-viewer");
     const viewerImage = document.getElementById("viewer-image");
     const closeViewer = document.getElementById("close-viewer");
@@ -17,320 +16,560 @@
     const previousPhoto = document.getElementById("previous-photo");
     const nextPhoto = document.getElementById("next-photo");
     const photoCounter = document.getElementById("photo-counter");
-    const addPhotoButton = document.getElementById("add-photo-button");
 
     if (!gallery || !photoViewer || !viewerImage) {
         console.error("Faltan elementos necesarios para la galería.");
         return;
     }
 
-    /*
-     * Cada ciudad tiene su propia lista.
-     * Las fotos añadidas existen solo en memoria durante esta sesión.
-     * Firebase se conectará después.
-     */
+    // ==========================================
+    // CONFIGURACIÓN DE GITHUB
+    // ==========================================
+
+    const GITHUB_USER = "andonieL5";
+    const GITHUB_REPO = "ikasbi-2026";
+    const GITHUB_BRANCH = "main";
+
+    const GITHUB_API =
+        `https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/contents/assets/assets/fotos`;
+
+    const RAW_BASE =
+        `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/assets/assets/fotos`;
+
+    // ==========================================
+    // NOMBRES DE LAS CARPETAS
+    // ==========================================
+
+    const cityFolders = {
+        "Tolosa": null,
+        "Clermont-Ferrand": "clermont ferrand",
+        "Múnich": "munich",
+        "Praga": "praga",
+        "Berlín": "berlin",
+        "Ámsterdam": "amsterdam",
+        "Brujas": "brujas",
+        "París": "paris"
+    };
+
+    // ==========================================
+    // ESTADO
+    // ==========================================
+
     const photosByCity = new Map();
 
     let currentCity = null;
     let currentPhotoIndex = 0;
-    let currentObjectUrl = null;
 
-    const fileInput = document.createElement("input");
-    fileInput.type = "file";
-    fileInput.accept = "image/*,video/*";
-    fileInput.multiple = true;
-    fileInput.hidden = true;
-    fileInput.setAttribute("aria-label", "Seleccionar fotos o vídeos");
+    // ==========================================
+    // OBTENER FOTOS DE UNA CIUDAD
+    // ==========================================
 
-    document.body.appendChild(fileInput);
+    async function loadCityPhotos(cityName) {
 
-    function getCityPhotos(cityName) {
-        if (!photosByCity.has(cityName)) {
-            photosByCity.set(cityName, []);
+        if (photosByCity.has(cityName)) {
+            return photosByCity.get(cityName);
         }
 
-        return photosByCity.get(cityName);
-    }
+        const folder = cityFolders[cityName];
 
-    function revokeTemporaryUrls(photos) {
-        photos.forEach(photo => {
-            if (photo.objectUrl) {
-                URL.revokeObjectURL(photo.objectUrl);
+        // Tolosa no tiene fotos
+        if (!folder) {
+            photosByCity.set(cityName, []);
+            return [];
+        }
+
+        try {
+
+            const response = await fetch(
+                `${GITHUB_API}/${encodeURIComponent(folder)}`
+            );
+
+            if (!response.ok) {
+                throw new Error(
+                    `GitHub respondió con ${response.status}`
+                );
             }
-        });
+
+            const files = await response.json();
+
+            const photos = files
+                .filter(file => {
+
+                    if (file.type !== "file") return false;
+
+                    const extension = file.name
+                        .split(".")
+                        .pop()
+                        .toLowerCase();
+
+                    return [
+                        "jpg",
+                        "jpeg",
+                        "png",
+                        "webp"
+                    ].includes(extension);
+                })
+                .sort((a, b) =>
+                    a.name.localeCompare(
+                        b.name,
+                        undefined,
+                        {
+                            numeric: true,
+                            sensitivity: "base"
+                        }
+                    )
+                )
+                .map(file => ({
+
+                    name: file.name,
+
+                    url:
+                        `${RAW_BASE}/${encodeURIComponent(folder)}/${encodeURIComponent(file.name)}`,
+
+                    type: "image"
+
+                }));
+
+            photosByCity.set(cityName, photos);
+
+            return photos;
+
+        } catch (error) {
+
+            console.error(
+                `Error cargando las fotos de ${cityName}:`,
+                error
+            );
+
+            photosByCity.set(cityName, []);
+
+            return [];
+        }
     }
 
-    function openFilePicker() {
-        if (!currentCity) return;
-        fileInput.click();
-    }
+    // ==========================================
+    // GALERÍA
+    // ==========================================
 
-    function renderCityGallery(cityName) {
+    async function renderCityGallery(cityName) {
+
         currentCity = cityName;
+
         gallery.replaceChildren();
 
-        const photos = getCityPhotos(cityName);
+        // Mensaje de carga
 
-        const addButton = document.createElement("button");
-        addButton.type = "button";
-        addButton.className = "gallery-add-button";
-        addButton.setAttribute("aria-label", `Añadir fotos o vídeos a ${cityName}`);
+        const loadingMessage = document.createElement("p");
 
-        const plus = document.createElement("span");
-        plus.className = "add-symbol";
-        plus.textContent = "+";
+        loadingMessage.className = "gallery-empty";
 
-        const label = document.createElement("span");
-        label.className = "add-label";
-        label.textContent = "Añadir";
+        loadingMessage.textContent =
+            "Cargando fotografías…";
 
-        addButton.append(plus, label);
-        addButton.addEventListener("click", openFilePicker);
-        gallery.appendChild(addButton);
+        gallery.appendChild(loadingMessage);
+
+        const photos = await loadCityPhotos(cityName);
+
+        gallery.replaceChildren();
+
+        // ==========================================
+        // SIN FOTOS
+        // ==========================================
 
         if (photos.length === 0) {
-            const emptyMessage = document.createElement("p");
+
+            const emptyMessage =
+                document.createElement("p");
+
             emptyMessage.className = "gallery-empty";
+
             emptyMessage.textContent =
-                `Todavía no has añadido fotos o vídeos a ${cityName}.`;
+                cityName === "Tolosa"
+                    ? "No hay fotografías disponibles para esta ciudad."
+                    : "No se han encontrado fotografías.";
+
             gallery.appendChild(emptyMessage);
+
             return;
         }
 
+        // ==========================================
+        // CREAR MINIATURAS
+        // ==========================================
+
         photos.forEach((photo, index) => {
-            const photoButton = document.createElement("button");
+
+            const photoButton =
+                document.createElement("button");
+
             photoButton.type = "button";
-            photoButton.className = "gallery-photo";
+
+            photoButton.className =
+                "gallery-photo";
+
             photoButton.setAttribute(
                 "aria-label",
-                photo.type === "video"
-                    ? `Abrir vídeo ${index + 1}`
-                    : `Abrir fotografía ${index + 1}`
+                `Abrir fotografía ${index + 1}`
             );
 
-            if (photo.type === "video") {
-                const video = document.createElement("video");
-                video.src = photo.url;
-                video.muted = true;
-                video.playsInline = true;
-                video.preload = "metadata";
-                video.setAttribute("aria-label", `Vídeo ${index + 1}`);
-                photoButton.appendChild(video);
-            } else {
-                const image = document.createElement("img");
-                image.src = photo.url;
-                image.alt = `Fotografía ${index + 1} de ${cityName}`;
-                image.loading = "lazy";
-                image.decoding = "async";
-                image.draggable = false;
-                photoButton.appendChild(image);
-            }
+            const image =
+                document.createElement("img");
 
-            photoButton.addEventListener("click", () => openPhoto(index));
+            image.src = photo.url;
+
+            image.alt =
+                `Fotografía ${index + 1} de ${cityName}`;
+
+            image.loading = "lazy";
+
+            image.decoding = "async";
+
+            image.draggable = false;
+
+            photoButton.appendChild(image);
+
+            photoButton.addEventListener(
+                "click",
+                () => openPhoto(index)
+            );
+
             gallery.appendChild(photoButton);
         });
     }
 
-    function updateCounter() {
-        const photos = getCityPhotos(currentCity);
+    // ==========================================
+    // CONTADOR
+    // ==========================================
 
-        if (photoCounter) {
+    function updateCounter() {
+
+        const photos =
+            photosByCity.get(currentCity) || [];
+
+        if (!photoCounter) return;
+
+        if (photos.length > 0) {
+
             photoCounter.textContent =
-                photos.length > 0
-                    ? `${currentPhotoIndex + 1} / ${photos.length}`
-                    : "0 / 0";
+                `${currentPhotoIndex + 1} / ${photos.length}`;
+
+        } else {
+
+            photoCounter.textContent =
+                "0 / 0";
         }
     }
 
+    // ==========================================
+    // MOSTRAR FOTO
+    // ==========================================
+
     function showPhoto(index) {
-        const photos = getCityPhotos(currentCity);
+
+        const photos =
+            photosByCity.get(currentCity) || [];
+
         if (!photos.length) return;
 
-        if (index < 0) index = photos.length - 1;
-        if (index >= photos.length) index = 0;
+        if (index < 0) {
+            index = photos.length - 1;
+        }
+
+        if (index >= photos.length) {
+            index = 0;
+        }
 
         currentPhotoIndex = index;
 
-        const photo = photos[currentPhotoIndex];
+        const photo =
+            photos[currentPhotoIndex];
 
-        if (currentObjectUrl) {
-            URL.revokeObjectURL(currentObjectUrl);
-            currentObjectUrl = null;
+        viewerImage.classList.add(
+            "photo-changing"
+        );
+
+        viewerImage.src = photo.url;
+
+        viewerImage.alt =
+            `Fotografía ${currentPhotoIndex + 1} de ${currentCity}`;
+
+        viewerImage.style.display =
+            "block";
+
+        const video =
+            document.getElementById("viewer-video");
+
+        if (video) {
+            video.style.display = "none";
         }
 
-        if (photo.type === "video") {
-            viewerImage.style.display = "none";
+        viewerImage.onload = () => {
 
-            let video = document.getElementById("viewer-video");
+            viewerImage.classList.remove(
+                "photo-changing"
+            );
 
-            if (!video) {
-                video = document.createElement("video");
-                video.id = "viewer-video";
-                video.controls = true;
-                video.playsInline = true;
-                video.className = "viewer-video";
-                photoViewer.appendChild(video);
-            }
+        };
 
-            video.style.display = "block";
-            video.src = photo.url;
-            video.load();
-        } else {
-            const video = document.getElementById("viewer-video");
+        viewerImage.onerror = () => {
 
-            if (video) {
-                video.pause();
-                video.removeAttribute("src");
-                video.load();
-                video.style.display = "none";
-            }
+            viewerImage.classList.remove(
+                "photo-changing"
+            );
 
-            viewerImage.style.display = "block";
-            viewerImage.classList.add("photo-changing");
-
-            const image = new Image();
-
-            image.onload = () => {
-                viewerImage.src = photo.url;
-                viewerImage.alt = `Fotografía ${currentPhotoIndex + 1} de ${currentCity}`;
-                viewerImage.classList.remove("photo-changing");
-            };
-
-            image.onerror = () => {
-                viewerImage.src = photo.url;
-                viewerImage.classList.remove("photo-changing");
-            };
-
-            image.src = photo.url;
-        }
+            console.error(
+                "No se pudo cargar:",
+                photo.url
+            );
+        };
 
         updateCounter();
     }
 
+    // ==========================================
+    // ABRIR VISOR
+    // ==========================================
+
     function openPhoto(index) {
-        if (!currentCity || !getCityPhotos(currentCity).length) return;
+
+        const photos =
+            photosByCity.get(currentCity) || [];
+
+        if (!photos.length) return;
 
         showPhoto(index);
 
-        photoViewer.style.display = "flex";
-        photoViewer.setAttribute("aria-hidden", "false");
+        photoViewer.style.display =
+            "flex";
+
+        photoViewer.setAttribute(
+            "aria-hidden",
+            "false"
+        );
 
         requestAnimationFrame(() => {
-            photoViewer.classList.add("viewer-open");
+
+            photoViewer.classList.add(
+                "viewer-open"
+            );
+
         });
 
-        document.body.style.overflow = "hidden";
+        document.body.style.overflow =
+            "hidden";
     }
+
+    // ==========================================
+    // CERRAR VISOR
+    // ==========================================
 
     function closePhotoViewer() {
-        photoViewer.classList.remove("viewer-open");
-        photoViewer.setAttribute("aria-hidden", "true");
 
-        const video = document.getElementById("viewer-video");
-        if (video) {
-            video.pause();
-            video.removeAttribute("src");
-            video.load();
-            video.style.display = "none";
-        }
+        photoViewer.classList.remove(
+            "viewer-open"
+        );
+
+        photoViewer.setAttribute(
+            "aria-hidden",
+            "true"
+        );
 
         setTimeout(() => {
-            if (!photoViewer.classList.contains("viewer-open")) {
-                photoViewer.style.display = "none";
-                viewerImage.removeAttribute("src");
-                viewerImage.style.display = "block";
+
+            if (
+                !photoViewer.classList.contains(
+                    "viewer-open"
+                )
+            ) {
+
+                photoViewer.style.display =
+                    "none";
+
+                viewerImage.removeAttribute(
+                    "src"
+                );
             }
+
         }, 230);
 
-        document.body.style.overflow = "";
+        document.body.style.overflow =
+            "";
     }
+
+    // ==========================================
+    // FOTO ANTERIOR
+    // ==========================================
 
     function showPreviousPhoto() {
-        showPhoto(currentPhotoIndex - 1);
+
+        showPhoto(
+            currentPhotoIndex - 1
+        );
     }
+
+    // ==========================================
+    // FOTO SIGUIENTE
+    // ==========================================
 
     function showNextPhoto() {
-        showPhoto(currentPhotoIndex + 1);
+
+        showPhoto(
+            currentPhotoIndex + 1
+        );
     }
 
-    function downloadCurrentPhoto() {
-        const photos = getCityPhotos(currentCity);
-        const photo = photos[currentPhotoIndex];
+    // ==========================================
+    // DESCARGAR FOTO
+    // ==========================================
+
+    async function downloadCurrentPhoto() {
+
+        const photos =
+            photosByCity.get(currentCity) || [];
+
+        const photo =
+            photos[currentPhotoIndex];
 
         if (!photo) return;
 
-        const link = document.createElement("a");
-        link.href = photo.url;
-        link.download = photo.name || `ikasbi-2026-${currentCity}`;
-        link.rel = "noopener";
-        document.body.appendChild(link);
-        link.click();
-        link.remove();
+        try {
+
+            const response =
+                await fetch(photo.url);
+
+            const blob =
+                await response.blob();
+
+            const blobUrl =
+                URL.createObjectURL(blob);
+
+            const link =
+                document.createElement("a");
+
+            link.href = blobUrl;
+
+            link.download =
+                photo.name ||
+                `ikasbi-2026-${currentCity}.jpg`;
+
+            document.body.appendChild(link);
+
+            link.click();
+
+            link.remove();
+
+            URL.revokeObjectURL(blobUrl);
+
+        } catch (error) {
+
+            console.error(
+                "Error descargando la fotografía:",
+                error
+            );
+
+            // Si el navegador bloquea la descarga,
+            // abrimos la imagen directamente.
+
+            window.open(
+                photo.url,
+                "_blank"
+            );
+        }
     }
 
-    function addSelectedFiles(fileList) {
-        if (!currentCity) return;
+    // ==========================================
+    // EVENTOS
+    // ==========================================
 
-        const files = Array.from(fileList || []).filter(file =>
-            file.type.startsWith("image/") ||
-            file.type.startsWith("video/")
+    if (closeViewer) {
+
+        closeViewer.addEventListener(
+            "click",
+            closePhotoViewer
         );
-
-        if (!files.length) return;
-
-        const cityPhotos = getCityPhotos(currentCity);
-
-        files.forEach(file => {
-            const objectUrl = URL.createObjectURL(file);
-
-            cityPhotos.push({
-                url: objectUrl,
-                objectUrl,
-                name: file.name || `ikasbi-${currentCity}`,
-                type: file.type.startsWith("video/") ? "video" : "image"
-            });
-        });
-
-        renderCityGallery(currentCity);
     }
 
-    fileInput.addEventListener("change", event => {
-        addSelectedFiles(event.target.files);
-        fileInput.value = "";
-    });
+    if (previousPhoto) {
 
-    if (addPhotoButton) {
-        addPhotoButton.addEventListener("click", openFilePicker);
+        previousPhoto.addEventListener(
+            "click",
+            showPreviousPhoto
+        );
     }
 
-    if (closeViewer) closeViewer.addEventListener("click", closePhotoViewer);
-    if (previousPhoto) previousPhoto.addEventListener("click", showPreviousPhoto);
-    if (nextPhoto) nextPhoto.addEventListener("click", showNextPhoto);
-    if (downloadPhoto) downloadPhoto.addEventListener("click", downloadCurrentPhoto);
+    if (nextPhoto) {
 
-    photoViewer.addEventListener("click", event => {
-        if (event.target === photoViewer) {
-            closePhotoViewer();
+        nextPhoto.addEventListener(
+            "click",
+            showNextPhoto
+        );
+    }
+
+    if (downloadPhoto) {
+
+        downloadPhoto.addEventListener(
+            "click",
+            downloadCurrentPhoto
+        );
+    }
+
+    // ==========================================
+    // CERRAR HACIENDO CLICK FUERA
+    // ==========================================
+
+    photoViewer.addEventListener(
+        "click",
+        event => {
+
+            if (
+                event.target === photoViewer
+            ) {
+
+                closePhotoViewer();
+            }
         }
-    });
+    );
 
-    document.addEventListener("keydown", event => {
-        if (!photoViewer.classList.contains("viewer-open")) return;
+    // ==========================================
+    // TECLADO
+    // ==========================================
 
-        if (event.key === "Escape") {
-            closePhotoViewer();
-        } else if (event.key === "ArrowLeft") {
-            showPreviousPhoto();
-        } else if (event.key === "ArrowRight") {
-            showNextPhoto();
+    document.addEventListener(
+        "keydown",
+        event => {
+
+            if (
+                !photoViewer.classList.contains(
+                    "viewer-open"
+                )
+            ) {
+                return;
+            }
+
+            if (event.key === "Escape") {
+
+                closePhotoViewer();
+
+            } else if (
+                event.key === "ArrowLeft"
+            ) {
+
+                showPreviousPhoto();
+
+            } else if (
+                event.key === "ArrowRight"
+            ) {
+
+                showNextPhoto();
+            }
         }
-    });
+    );
 
-    // La galería se actualiza cuando app.js abre una ciudad.
-    window.renderCityGallery = renderCityGallery;
+    // ==========================================
+    // CONECTAR CON APP.JS
+    // ==========================================
 
-    // Limpia las direcciones temporales al abandonar la página.
-    window.addEventListener("beforeunload", () => {
-        photosByCity.forEach(revokeTemporaryUrls);
-    });
+    window.renderCityGallery =
+        renderCityGallery;
+
 })();
