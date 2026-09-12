@@ -37,23 +37,23 @@
         `https://raw.githubusercontent.com/${GITHUB_USER}/${GITHUB_REPO}/${GITHUB_BRANCH}/assets/assets/fotos`;
 
     // ==========================================
-    // NOMBRES DE LAS CARPETAS
+    // CARPETAS DE LAS CIUDADES
     // ==========================================
+
+    // IMPORTANTE:
+    // Las claves tienen que coincidir EXACTAMENTE
+    // con los nombres visibles de los botones del HTML.
 
     const cityFolders = {
         "Tolosa": null,
         "Clermont-Ferrand": "clermont ferrand",
-        "Múnich": "munich",
+        "Munich": "munich",
         "Praga": "praga",
-        "Berlín": "berlin",
-        "Ámsterdam": "amsterdam",
+        "Berlin": "berlin",
+        "Amsterdam": "amsterdam",
         "Brujas": "brujas",
-        "París": "paris"
+        "Paris": "paris"
     };
-
-    // ==========================================
-    // ESTADO
-    // ==========================================
 
     const photosByCity = new Map();
 
@@ -61,7 +61,7 @@
     let currentPhotoIndex = 0;
 
     // ==========================================
-    // OBTENER FOTOS DE UNA CIUDAD
+    // CARGAR FOTOS DE UNA CIUDAD
     // ==========================================
 
     async function loadCityPhotos(cityName) {
@@ -72,7 +72,6 @@
 
         const folder = cityFolders[cityName];
 
-        // Tolosa no tiene fotos
         if (!folder) {
             photosByCity.set(cityName, []);
             return [];
@@ -95,7 +94,9 @@
             const photos = files
                 .filter(file => {
 
-                    if (file.type !== "file") return false;
+                    if (file.type !== "file") {
+                        return false;
+                    }
 
                     const extension = file.name
                         .split(".")
@@ -148,7 +149,7 @@
     }
 
     // ==========================================
-    // GALERÍA
+    // MOSTRAR GALERÍA
     // ==========================================
 
     async function renderCityGallery(cityName) {
@@ -157,83 +158,86 @@
 
         gallery.replaceChildren();
 
-        // Mensaje de carga
+        const loadingMessage =
+            document.createElement("p");
 
-        const loadingMessage = document.createElement("p");
-
-        loadingMessage.className = "gallery-empty";
+        loadingMessage.className =
+            "gallery-empty";
 
         loadingMessage.textContent =
-            "Cargando fotografías…";
+            "Argazkiak kargatzen…";
 
         gallery.appendChild(loadingMessage);
 
-        const photos = await loadCityPhotos(cityName);
+        const photos =
+            await loadCityPhotos(cityName);
 
         gallery.replaceChildren();
-
-        // ==========================================
-        // SIN FOTOS
-        // ==========================================
 
         if (photos.length === 0) {
 
             const emptyMessage =
                 document.createElement("p");
 
-            emptyMessage.className = "gallery-empty";
+            emptyMessage.className =
+                "gallery-empty";
 
             emptyMessage.textContent =
                 cityName === "Tolosa"
-                    ? "No hay fotografías disponibles para esta ciudad."
-                    : "No se han encontrado fotografías.";
+                    ? "Ez dago argazkirik hiri honetarako."
+                    : "Ez da argazkirik aurkitu.";
 
             gallery.appendChild(emptyMessage);
 
             return;
         }
 
-        // ==========================================
-        // CREAR MINIATURAS
-        // ==========================================
-
         photos.forEach((photo, index) => {
 
             const photoButton =
                 document.createElement("button");
 
-            photoButton.type = "button";
+            photoButton.type =
+                "button";
 
             photoButton.className =
                 "gallery-photo";
 
             photoButton.setAttribute(
                 "aria-label",
-                `Abrir fotografía ${index + 1}`
+                `${index + 1}. argazkia ireki`
             );
 
             const image =
                 document.createElement("img");
 
-            image.src = photo.url;
+            image.src =
+                photo.url;
 
             image.alt =
-                `Fotografía ${index + 1} de ${cityName}`;
+                `${cityName} - ${index + 1}. argazkia`;
 
-            image.loading = "lazy";
+            image.loading =
+                "lazy";
 
-            image.decoding = "async";
+            image.decoding =
+                "async";
 
-            image.draggable = false;
+            image.draggable =
+                false;
 
-            photoButton.appendChild(image);
+            photoButton.appendChild(
+                image
+            );
 
             photoButton.addEventListener(
                 "click",
                 () => openPhoto(index)
             );
 
-            gallery.appendChild(photoButton);
+            gallery.appendChild(
+                photoButton
+            );
         });
     }
 
@@ -261,7 +265,7 @@
     }
 
     // ==========================================
-    // MOSTRAR FOTO
+    // MOSTRAR UNA FOTO
     // ==========================================
 
     function showPhoto(index) {
@@ -279,7 +283,8 @@
             index = 0;
         }
 
-        currentPhotoIndex = index;
+        currentPhotoIndex =
+            index;
 
         const photo =
             photos[currentPhotoIndex];
@@ -288,10 +293,11 @@
             "photo-changing"
         );
 
-        viewerImage.src = photo.url;
+        viewerImage.src =
+            photo.url;
 
         viewerImage.alt =
-            `Fotografía ${currentPhotoIndex + 1} de ${currentCity}`;
+            `${currentCity} - ${currentPhotoIndex + 1}. argazkia`;
 
         viewerImage.style.display =
             "block";
@@ -300,34 +306,37 @@
             document.getElementById("viewer-video");
 
         if (video) {
-            video.style.display = "none";
+            video.style.display =
+                "none";
         }
 
-        viewerImage.onload = () => {
+        viewerImage.onload =
+            () => {
 
-            viewerImage.classList.remove(
-                "photo-changing"
-            );
+                viewerImage.classList.remove(
+                    "photo-changing"
+                );
 
-        };
+            };
 
-        viewerImage.onerror = () => {
+        viewerImage.onerror =
+            () => {
 
-            viewerImage.classList.remove(
-                "photo-changing"
-            );
+                viewerImage.classList.remove(
+                    "photo-changing"
+                );
 
-            console.error(
-                "No se pudo cargar:",
-                photo.url
-            );
-        };
+                console.error(
+                    "Ezin izan da argazkia kargatu:",
+                    photo.url
+                );
+            };
 
         updateCounter();
     }
 
     // ==========================================
-    // ABRIR VISOR
+    // ABRIR FOTO
     // ==========================================
 
     function openPhoto(index) {
@@ -360,7 +369,7 @@
     }
 
     // ==========================================
-    // CERRAR VISOR
+    // CERRAR FOTO
     // ==========================================
 
     function closePhotoViewer() {
@@ -419,7 +428,7 @@
     }
 
     // ==========================================
-    // DESCARGAR FOTO
+    // DESCARGAR FOTO DIRECTAMENTE
     // ==========================================
 
     async function downloadCurrentPhoto() {
@@ -434,11 +443,23 @@
 
         try {
 
+            // Descargamos el archivo real
+            // desde GitHub.
+
             const response =
                 await fetch(photo.url);
 
+            if (!response.ok) {
+                throw new Error(
+                    `Error HTTP ${response.status}`
+                );
+            }
+
             const blob =
                 await response.blob();
+
+            // Creamos una URL temporal
+            // para descargar el archivo.
 
             const blobUrl =
                 URL.createObjectURL(blob);
@@ -446,29 +467,37 @@
             const link =
                 document.createElement("a");
 
-            link.href = blobUrl;
+            link.href =
+                blobUrl;
 
             link.download =
                 photo.name ||
                 `ikasbi-2026-${currentCity}.jpg`;
 
-            document.body.appendChild(link);
+            document.body.appendChild(
+                link
+            );
 
             link.click();
 
             link.remove();
 
-            URL.revokeObjectURL(blobUrl);
+            // Liberamos la URL temporal.
+
+            setTimeout(() => {
+                URL.revokeObjectURL(blobUrl);
+            }, 1000);
 
         } catch (error) {
 
             console.error(
-                "Error descargando la fotografía:",
+                "Errorea argazkia deskargatzean:",
                 error
             );
 
-            // Si el navegador bloquea la descarga,
-            // abrimos la imagen directamente.
+            // Si el navegador bloquea la descarga
+            // directa, abrimos la imagen como
+            // último recurso.
 
             window.open(
                 photo.url,
@@ -513,9 +542,7 @@
         );
     }
 
-    // ==========================================
-    // CERRAR HACIENDO CLICK FUERA
-    // ==========================================
+    // Cerrar haciendo clic en el fondo.
 
     photoViewer.addEventListener(
         "click",
@@ -566,7 +593,7 @@
     );
 
     // ==========================================
-    // CONECTAR CON APP.JS
+    // FUNCIÓN PÚBLICA
     // ==========================================
 
     window.renderCityGallery =
