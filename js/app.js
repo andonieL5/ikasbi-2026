@@ -15,6 +15,21 @@ let currentCity = null;
 
 
 // ==========================================
+// ACTUALIZAR LA GALERÍA
+// ==========================================
+
+function updateCityGallery(cityName) {
+    // Guardar la ciudad activa para que otros scripts puedan consultarla
+    window.activeCityName = cityName;
+
+    // Si gallery.js ya está preparado, mostrar las fotos de esta ciudad
+    if (typeof window.renderCityGallery === "function") {
+        window.renderCityGallery(cityName);
+    }
+}
+
+
+// ==========================================
 // ABRIR PANEL DE UNA CIUDAD
 // ==========================================
 
@@ -48,9 +63,10 @@ function openCity(cityName) {
 
             // Cambiar ciudad
             panelCity.textContent = cityName;
-
             currentCity = cityName;
 
+            // Actualizar las fotos de la nueva ciudad
+            updateCityGallery(cityName);
 
             // Volver a abrir
             photoPanel.classList.add("panel-open");
@@ -67,16 +83,16 @@ function openCity(cityName) {
     // ==========================================
 
     panelCity.textContent = cityName;
-
     currentCity = cityName;
 
+    // Actualizar las fotos de la ciudad
+    updateCityGallery(cityName);
+
+    // Abrir el panel
     photoPanel.classList.add("panel-open");
 
 
-    console.log(
-        "Ciudad abierta:",
-        cityName
-    );
+    console.log("Ciudad abierta:", cityName);
 }
 
 
@@ -86,16 +102,13 @@ function openCity(cityName) {
 
 function closeCityPanel() {
 
-    photoPanel.classList.remove(
-        "panel-open"
-    );
+    photoPanel.classList.remove("panel-open");
 
     currentCity = null;
+    window.activeCityName = null;
 
 
-    console.log(
-        "Panel cerrado"
-    );
+    console.log("Panel cerrado");
 }
 
 
@@ -105,26 +118,17 @@ function closeCityPanel() {
 
 function setupCityButtons() {
 
-    const cityButtons =
-        document.querySelectorAll(
-            ".city-button"
-        );
-
+    const cityButtons = document.querySelectorAll(".city-button");
 
     cityButtons.forEach(button => {
 
-        button.addEventListener(
-            "click",
-            () => {
+        button.addEventListener("click", () => {
 
-                const cityName =
-                    button.textContent.trim();
+            const cityName = button.textContent.trim();
 
+            openCity(cityName);
 
-                openCity(cityName);
-
-            }
-        );
+        });
 
     });
 
@@ -135,28 +139,22 @@ function setupCityButtons() {
 // BOTÓN CERRAR
 // ==========================================
 
-closePanel.addEventListener(
-    "click",
-    closeCityPanel
-);
+if (closePanel) {
+    closePanel.addEventListener("click", closeCityPanel);
+}
 
 
 // ==========================================
 // TECLA ESC
 // ==========================================
 
-document.addEventListener(
-    "keydown",
-    event => {
+document.addEventListener("keydown", event => {
 
-        if (event.key === "Escape") {
-
-            closeCityPanel();
-
-        }
-
+    if (event.key === "Escape") {
+        closeCityPanel();
     }
-);
+
+});
 
 
 // ==========================================
