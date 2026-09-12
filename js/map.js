@@ -1,304 +1,118 @@
-// ==========================================
-// CONTENEDOR DEL MAPA
-// ==========================================
+// IKASBI 2026 — MAPA DE EUROPA Y RECORRIDO
 
-const mapContainer = document.getElementById("map");
+(() => {
+    "use strict";
 
-const width = mapContainer.clientWidth;
-const height = mapContainer.clientHeight;
+    const mapContainer = document.getElementById("map");
 
-
-// ==========================================
-// CIUDADES DEL VIAJE
-// ==========================================
-
-const cities = [
-    {
-        name: "Tolosa",
-        coordinates: [-2.079, 43.135],
-        button: "city-tolosa"
-    },
-    {
-        name: "Clermont-Ferrand",
-        coordinates: [3.087, 45.777],
-        button: "city-clermont"
-    },
-    {
-        name: "Múnich",
-        coordinates: [11.582, 48.135],
-        button: "city-munich"
-    },
-    {
-        name: "Praga",
-        coordinates: [14.438, 50.075],
-        button: "city-prague"
-    },
-    {
-        name: "Berlín",
-        coordinates: [13.405, 52.520],
-        button: "city-berlin"
-    },
-    {
-        name: "Ámsterdam",
-        coordinates: [4.904, 52.368],
-        button: "city-amsterdam"
-    },
-    {
-        name: "Brujas",
-        coordinates: [3.224, 51.209],
-        button: "city-bruges"
-    },
-    {
-        name: "París",
-        coordinates: [2.352, 48.857],
-        button: "city-paris"
+    if (!mapContainer || !window.d3) {
+        console.error("No se encuentra el mapa o D3.");
+        return;
     }
-];
 
+    const cities = [
+        { name: "Tolosa", coordinates: [-2.079, 43.135], button: "city-tolosa" },
+        { name: "Clermont-Ferrand", coordinates: [3.087, 45.777], button: "city-clermont" },
+        { name: "Múnich", coordinates: [11.582, 48.135], button: "city-munich" },
+        { name: "Praga", coordinates: [14.438, 50.075], button: "city-prague" },
+        { name: "Berlín", coordinates: [13.405, 52.520], button: "city-berlin" },
+        { name: "Ámsterdam", coordinates: [4.904, 52.368], button: "city-amsterdam" },
+        { name: "Brujas", coordinates: [3.224, 51.209], button: "city-bruges" },
+        { name: "París", coordinates: [2.352, 48.857], button: "city-paris" }
+    ];
 
-// ==========================================
-// CREAR SVG
-// ==========================================
+    const svg = d3.select(mapContainer)
+        .append("svg")
+        .attr("role", "img")
+        .attr("aria-label", "Mapa de Europa con el recorrido del viaje");
 
-const svg = d3
-    .select("#map")
-    .append("svg")
-    .attr("viewBox", `0 0 ${width} ${height}`)
-    .attr("preserveAspectRatio", "xMidYMid meet");
+    const mapLayer = svg.append("g").attr("class", "countries");
+    const routeLayer = svg.append("g").attr("class", "route-layer");
+    const pointsLayer = svg.append("g").attr("class", "points-layer");
 
+    let europeData = null;
+    let resizeFrame = null;
 
-// ==========================================
-// CARGAR MAPA
-// ==========================================
+    function drawMap() {
+        if (!europeData) return;
 
-d3.json("./assets/map/europe.geojson")
-    .then((europe) => {
+        const width = Math.max(1, mapContainer.clientWidth);
+        const height = Math.max(1, mapContainer.clientHeight);
 
-        console.log("Mapa de Europa cargado correctamente.");
+        svg.attr("viewBox", `0 0 ${width} ${height}`);
 
-
-        // ==========================================
-        // CREAR COLECCIÓN DE CIUDADES
-        // ==========================================
-
-        const cityFeatures = cities.map(city => ({
-            type: "Feature",
-            geometry: {
-                type: "Point",
-                coordinates: city.coordinates
-            }
-        }));
-
-
-        const cityCollection = {
-            type: "FeatureCollection",
-            features: cityFeatures
-        };
-
-
-        // ==========================================
-        // PROYECCIÓN
-        // ==========================================
-
-        const projection = d3
-            .geoMercator()
+        const projection = d3.geoMercator()
             .fitExtent(
-                [
-                    [60, 80],
-                    [width - 60, height - 80]
-                ],
-                cityCollection
+                [[18, 18], [width - 18, height - 18]],
+                europeData
             );
 
+        const path = d3.geoPath().projection(projection);
 
-        // ==========================================
-        // GENERADOR DEL MAPA
-        // ==========================================
-
-        const path = d3
-            .geoPath()
-            .projection(projection);
-
-
-        // ==========================================
-        // DIBUJAR PAÍSES
-        // ==========================================
-
-        svg
-            .append("g")
-            .attr("class", "countries")
-            .selectAll("path")
-            .data(europe.features)
+        mapLayer.selectAll("path")
+            .data(europeData.features || [])
             .join("path")
             .attr("class", "country")
             .attr("d", path);
 
-
-        // ==========================================
-        // CALCULAR POSICIONES DE LAS CIUDADES
-        // ==========================================
-
-        cities.forEach(city => {
-
-            const [x, y] = projection(city.coordinates);
-
-            city.x = x;
-            city.y = y;
-
+        const projectedCities = cities.map(city => {
+            const point = projection(city.coordinates);
+            return { ...city, x: point[0], y: point[1] };
         });
 
+        const controlPoint = projection([5.2, 51.0]);
 
-        // ==========================================
-        // CREAR RECORRIDO
-        // ==========================================
-
-        // Añadimos un punto de control invisible
-        // entre Ámsterdam y Brujas.
-        //
-        // Este punto hace que la curva pase por
-        // la zona interior de Países Bajos/Bélgica
-        // en lugar de abrirse hacia el mar.
-
-        const landControlPoint = {
-            x: projection([5.2, 51.0])[0],
-            y: projection([5.2, 51.0])[1]
-        };
-
-
-        const routeCities = [
-            cities[0], // Tolosa
-            cities[1], // Clermont-Ferrand
-            cities[2], // Múnich
-            cities[3], // Praga
-            cities[4], // Berlín
-            cities[5], // Ámsterdam
-
-            landControlPoint,
-
-            cities[6], // Brujas
-            cities[7]  // París
+        const routePoints = [
+            ...projectedCities.slice(0, 6),
+            { x: controlPoint[0], y: controlPoint[1] },
+            ...projectedCities.slice(6)
         ];
 
+        const routeLine = d3.line()
+            .x(point => point.x)
+            .y(point => point.y)
+            .curve(d3.curveCatmullRom.alpha(0.5));
 
-        const routeLine = d3
-            .line()
-            .x(city => city.x)
-            .y(city => city.y)
-            .curve(
-                d3.curveCatmullRom.alpha(0.5)
-            );
-
-
-        const routePath = svg
-            .append("path")
-            .datum(routeCities)
+        routeLayer.selectAll("path")
+            .data([routePoints])
+            .join("path")
             .attr("class", "travel-route")
             .attr("d", routeLine);
 
-
-        // ==========================================
-        // ANIMACIÓN DEL RECORRIDO
-        // ==========================================
-
-        const routeLength = routePath
-            .node()
-            .getTotalLength();
-
-
-        routePath
-            .attr(
-                "stroke-dasharray",
-                routeLength
-            )
-            .attr(
-                "stroke-dashoffset",
-                routeLength
-            )
-            .transition()
-            .duration(2200)
-            .ease(d3.easeCubicInOut)
-            .attr(
-                "stroke-dashoffset",
-                0
-            );
-
-
-        // ==========================================
-        // PUNTOS DE LAS CIUDADES
-        // ==========================================
-
-        const cityPoints = svg
-            .selectAll(".city-point")
-            .data(cities)
+        pointsLayer.selectAll("circle")
+            .data(projectedCities)
             .join("circle")
             .attr("class", "city-point")
             .attr("cx", city => city.x)
             .attr("cy", city => city.y)
-            .attr("r", 0);
+            .attr("r", 5);
 
-
-        // ==========================================
-        // ANIMACIÓN DE LOS PUNTOS
-        // ==========================================
-
-        cityPoints
-            .transition()
-            .delay(1800)
-            .duration(500)
-            .attr("r", 6);
-
-
-        // ==========================================
-        // COLOCAR BOTONES
-        // ==========================================
-
-        cities.forEach(city => {
-
-            const button = document.getElementById(
-                city.button
-            );
-
-
-            if (!button) {
-
-                console.error(
-                    "No se encontró:",
-                    city.button
-                );
-
-                return;
-            }
-
+        projectedCities.forEach(city => {
+            const button = document.getElementById(city.button);
+            if (!button) return;
 
             button.style.left = `${city.x}px`;
             button.style.top = `${city.y}px`;
+            button.classList.add("city-visible");
+        });
+    }
 
-
-            // ==========================================
-            // MOSTRAR BOTÓN
-            // ==========================================
-
-            setTimeout(() => {
-
-                button.classList.add(
-                    "city-visible"
-                );
-
-            }, 1900);
-
+    d3.json("./assets/map/europe.geojson")
+        .then(data => {
+            europeData = data;
+            drawMap();
+            console.log("Mapa de Europa cargado.");
+        })
+        .catch(error => {
+            console.error("No se pudo cargar assets/map/europe.geojson:", error);
         });
 
+    window.addEventListener("resize", () => {
+        if (resizeFrame !== null) cancelAnimationFrame(resizeFrame);
 
-        console.log(
-            "Ruta y ciudades preparadas."
-        );
-
-    })
-    .catch(error => {
-
-        console.error(
-            "Error cargando el mapa:",
-            error
-        );
-
+        resizeFrame = requestAnimationFrame(() => {
+            resizeFrame = null;
+            drawMap();
+        });
     });
+})();
